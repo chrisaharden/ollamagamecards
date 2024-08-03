@@ -3,15 +3,14 @@ from fpdf import FPDF
 
 def generate_card_pdf(words:str):
 
-    # Copy the nouns
-    # all_nouns = words.copy()
-
-    # Parse the comma separated string into an array
-    all_nouns = words.split(", ")
+    # Sometimes the model separates the words in the comma-separated list with a space behind the comma.  Remove that space.
+    # Then split the comma separated string into an array
+    words.replace(", ", ",")
+    all_words = words.split(",")
 
     """
-    # Hardcoded list of sample nouns (120+ nouns)
-    all_nouns = [
+    # Hardcoded list of sample words (120+ words)
+    all_words = [
         "apple", "banana", "cat", "dog", "elephant", "flower", "giraffe", "hat", "ice", "jacket",
         "kite", "lemon", "monkey", "notebook", "orange", "piano", "queen", "rose", "sun", "table",
         "umbrella", "violin", "whale", "xylophone", "yogurt", "zebra", "airplane", "ball", "car",
@@ -41,14 +40,14 @@ def generate_card_pdf(words:str):
     ]
     """
 
-    # Function to generate a list of unique random nouns
-    def generate_unique_random_nouns(available_nouns, num=3):
-        if len(available_nouns) < num:
-            num = len(available_nouns)
-        selected_nouns = random.sample(available_nouns, num)
-        for noun in selected_nouns:
-            available_nouns.remove(noun)
-        return selected_nouns
+    # Function to generate a list of unique random words
+    def generate_unique_random_words(available_words, num=3):
+        if len(available_words) < num:
+            num = len(available_words)
+        selected_words = random.sample(available_words, num)
+        for noun in selected_words:
+            available_words.remove(noun)
+        return selected_words
 
     # Create instance of FPDF class
     pdf = FPDF('P', 'in', 'Letter')  # 'P' for portrait, 'in' for inches, 'Letter' for 8.5x11 in
@@ -66,49 +65,49 @@ def generate_card_pdf(words:str):
     x_positions = [margin + (section_width * i) for i in range(3)]
     y_positions = [margin + (section_height * j) for j in range(4)]
 
-    # Create a copy of all_nouns to work with
-    available_nouns = all_nouns.copy()
+    # Create a copy of all_words to work with
+    available_words = all_words.copy()
 
     # Function to add a new page and populate it with sections
-    def add_page_with_sections(pdf, x_positions, y_positions, available_nouns):
+    def add_page_with_sections(pdf, x_positions, y_positions, available_words):
         pdf.add_page()
         for y in y_positions:
             for x in x_positions:
-                if not available_nouns:
+                if not available_words:
                     return
                 
                 # Draw rectangle for the section
                 pdf.rect(x, y, section_width, section_height)
                 
                 # Set bold font for title
-                pdf.set_font("InkfreeBold", size=12)
+                pdf.set_font("InkfreeBold", size=18)
                 
                 # Add title (centered within the section and underlined)
-                title = "Nouns"
+                title = "Choices"
                 title_width = pdf.get_string_width(title)
                 pdf.set_xy(x + (section_width - title_width) / 2, y + 0.1)
                 pdf.cell(title_width, 0.2, title, align='C', border='B')  # 'B' for bottom border (underline)
                 
-                # Generate unique random nouns
-                random_nouns = generate_unique_random_nouns(available_nouns)
+                # Generate unique random words
+                random_words = generate_unique_random_words(available_words)
                 
                 # Set regular font for list
                 pdf.set_font("Inkfree", size=16)
                 
-                # Set initial cursor position for nouns
+                # Set initial cursor position for words
                 cursor_x = x + section_width / 2
                 cursor_y = y + 0.35
                 
                 # Add text
-                for noun in random_nouns:
+                for noun in random_words:
                     pdf.set_xy(cursor_x - pdf.get_string_width(noun) / 2, cursor_y)
                     pdf.cell(0, 0.18, noun)
                     cursor_y += 0.18  # Move cursor down
 
-    # Add pages and populate sections until all nouns are used
+    # Add pages and populate sections until all words are used
     section_count = 0
-    while available_nouns:
-        add_page_with_sections(pdf, x_positions, y_positions, available_nouns)
+    while available_words:
+        add_page_with_sections(pdf, x_positions, y_positions, available_words)
         section_count += 1
 
     # Save the PDF

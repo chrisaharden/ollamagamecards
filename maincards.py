@@ -5,18 +5,19 @@ import generate_card_pdf
 
 
 # New function to generate a game PDF with an array of words
-def generate_game_pdf(words: list[str]) -> str:
-    # This is a placeholder implementation
-    # In a real scenario, this function would generate a PDF
-    my_nouns = ["apple", "banana", "car", "dog", "elephant"]
-    generate_card_pdf.generate_card_pdf(my_nouns) #TO DO replace with words param
+def generate_game_pdf(words: str) -> str:
+    #hardcoded 
+    # my_words = ["apple", "banana", "car", "dog", "elephant"]
+    print(words)
+
+    generate_card_pdf.generate_card_pdf(words) #TO DO replace with words param
     return json.dumps({"status": "PDF generated", "words": words})
 
 
 async def run(model: str):
     client = ollama.AsyncClient()
     # Initialize conversation with a user query
-    messages = [{'role': 'user', 'content': 'Can you generate a word game PDF with the following words: cat, dog, bird?'}]
+    messages = [{'role': 'user', 'content': 'Can you generate a game pdf with a comma separated list of 50 unique nouns?'}]
 
     # First API call: Send the query and function description to the model
     response = await client.chat(
@@ -27,14 +28,14 @@ async def run(model: str):
                 'type': 'function',
                 'function': {
                     'name': 'generate_game_pdf',
-                    'description': 'Generate a PDF with a word game using the provided words',
+                    'description': 'Generate a PDF using the provided words',
                     'parameters': {
                         'type': 'object',
                         'properties': {
                             'words': {
-                                'type': 'array',
-                                'items': {'type': 'string'},
-                                'description': 'An array of words to be used in the game',
+                                'type': 'string',
+                                #'items': {'type': 'string'},
+                                'description': 'A list of comma separated words to be used in the game',
                             },
                         },
                         'required': ['words'],

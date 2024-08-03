@@ -1,10 +1,14 @@
 import random
 from fpdf import FPDF
 
-def generate_card_pdf(words):
+def generate_card_pdf(words:str):
 
     # Copy the nouns
-    all_nouns = words.copy()
+    # all_nouns = words.copy()
+
+    # Parse the comma separated string into an array
+    all_nouns = words.split(", ")
+
     """
     # Hardcoded list of sample nouns (120+ nouns)
     all_nouns = [
@@ -108,5 +112,5 @@ def generate_card_pdf(words):
         section_count += 1
 
     # Save the PDF
-    pdf.output("sections_with_unique_nouns_centered_and_titled_underlined.pdf")
+    pdf.output("game.pdf")
     print(f"PDF generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")

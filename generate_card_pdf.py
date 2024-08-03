@@ -1,7 +1,7 @@
 import random
 from fpdf import FPDF
 
-def generate_game_pdf(words):
+def generate_card_pdf(words):
 
     # Copy the nouns
     all_nouns = words.copy()

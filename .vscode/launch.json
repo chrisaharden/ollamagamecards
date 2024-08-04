@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "generate a pdf card deck with a comma separated list of 50 unique verbs with a title of Verbs"
+                "Generate a pdf card deck with a comma separated list of 36 unique verbs with a title of Verbs and use Comic Sans MS font"
             ]
         }
     ]

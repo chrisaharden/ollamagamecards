@@ -2,10 +2,11 @@ import json
 import ollama
 import asyncio
 import generate_card_pdf
+import sys
 
 
 # New function to generate a game PDF with an array of words
-def generate_game_pdf(words: str) -> str:
+def generate_pdf_carddeck(words: str) -> str:
     #hardcoded 
     # my_words = ["apple", "banana", "car", "dog", "elephant"]
     print(words)
@@ -14,10 +15,10 @@ def generate_game_pdf(words: str) -> str:
     return json.dumps({"status": "PDF generated", "words": words})
 
 
-async def run(model: str):
+async def run(model: str, prompt:str):
     client = ollama.AsyncClient()
     # Initialize conversation with a user query
-    messages = [{'role': 'user', 'content': 'Can you generate a game pdf with a comma separated list of 50 unique nouns?'}]
+    messages = [{'role': 'user', 'content': prompt}]
 
     # First API call: Send the query and function description to the model
     response = await client.chat(
@@ -27,14 +28,13 @@ async def run(model: str):
             {
                 'type': 'function',
                 'function': {
-                    'name': 'generate_game_pdf',
+                    'name': 'generate_pdf_carddeck',
                     'description': 'Generate a PDF using the provided words',
                     'parameters': {
                         'type': 'object',
                         'properties': {
                             'words': {
                                 'type': 'string',
-                                #'items': {'type': 'string'},
                                 'description': 'A list of comma separated words to be used in the game',
                             },
                         },
@@ -57,7 +57,7 @@ async def run(model: str):
     # Process function calls made by the model
     if response['message'].get('tool_calls'):
         available_functions = {
-            'generate_game_pdf': generate_game_pdf,
+            'generate_pdf_carddeck': generate_pdf_carddeck,
         }
         for tool in response['message']['tool_calls']:
             function_to_call = available_functions[tool['function']['name']]
@@ -80,8 +80,16 @@ async def run(model: str):
 # asyncio.run(run('mistral'))
 # asyncio.run(run('llama3.1'))
 
-# CH: use this in a python script for asynchronous processes:
-asyncio.run(run('llama3.1'))
+#MAIN CALL FROM THE COMMAND LINE
+# Get the string from command line arguments (assuming the first argument is the text)
+if len(sys.argv) > 1:
+    prompt = sys.argv[1]
 
-# CH: Use this when you are in the jupyter notebook:
-# await run('llama3.1')
+    # CH: use this in a python script for asynchronous processes:
+    asyncio.run(run('llama3.1',prompt))
+
+    # CH: Use this when you are in the jupyter notebook:
+    # await run('llama3.1',argument_1)
+else:
+    print("Error: Please provide a prompt in quotes as a command line argument, such as 'Can you generate a game pdf with a comma separated list of 50 unique nouns?'.")
+

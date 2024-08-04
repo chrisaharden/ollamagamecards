@@ -8,40 +8,8 @@ def generate_card_pdf(words:str):
     words.replace(", ", ",")
     all_words = words.split(",")
 
-    """
-    # Hardcoded list of sample words (120+ words)
-    all_words = [
-        "apple", "banana", "cat", "dog", "elephant", "flower", "giraffe", "hat", "ice", "jacket",
-        "kite", "lemon", "monkey", "notebook", "orange", "piano", "queen", "rose", "sun", "table",
-        "umbrella", "violin", "whale", "xylophone", "yogurt", "zebra", "airplane", "ball", "car",
-        "dolphin", "eagle", "frog", "guitar", "horse", "igloo", "jelly", "kangaroo", "lion",
-        "mushroom", "nest", "octopus", "penguin", "quilt", "rabbit", "snake", "tiger", "unicorn",
-        "vase", "wolf", "yak", "zucchini", "anchor", "book", "candle", "drum", "egg", "feather",
-        "glasses", "hammer", "island", "juice", "key", "leaf", "moon", "needle", "owl", "pencil",
-        "quail", "rainbow", "star", "tree", "umbrella", "volcano", "window", "yarn", "zipper",
-        "acorn", "butterfly", "cactus", "daisy", "elephant", "fox", "grapes", "helicopter", "iguana",
-        "jellyfish", "koala", "lighthouse", "mountain", "nest", "octopus", "peacock", "quokka",
-        "raccoon", "seashell", "tortoise", "unicycle", "violin", "watermelon", "x-ray", "yeti",
-        "zebra", "astronaut", "balloon", "crayons", "dinosaur", "envelope", "fireworks", "globe",
-        "hamburger", "ice cream", "jigsaw", "kiwi", "ladybug", "magnet", "newspaper", "ostrich",
-        "popcorn", "quarter", "robot", "scissors", "telescope", "umbrella", "volcano", "wagon",
-        "xylophone", "yo-yo", "zeppelin", "ant", "beach", "cloud", "desert", "engine", "forest",
-        "garden", "hill", "iceberg", "jungle", "kettle", "lantern", "mountain", "net", "ocean",
-        "pond", "quarry", "river", "stream", "tower", "universe", "valley", "waterfall", "xenon",
-        "yard", "zipline", "arch", "bridge", "cave", "door", "exit", "fountain", "gate", "house",
-        "island", "junction", "kiosk", "lake", "meadow", "nook", "orchard", "path", "quicksand",
-        "road", "shore", "trail", "underpass", "village", "wall", "xylophone", "yurt", "zenith",
-        "avenue", "building", "castle", "dome", "elevator", "farm", "gallery", "hotel", "igloo",
-        "jetty", "kingdom", "library", "market", "nursery", "office", "palace", "quay", "resort",
-        "station", "temple", "underground", "villa", "warehouse", "yard", "zoo", "arena", "block",
-        "church", "diner", "estate", "field", "garage", "hall", "inn", "jail", "kitchen", "lab",
-        "museum", "nursery", "observatory", "park", "quarter", "restaurant", "stadium", "theater",
-        "university", "vineyard", "windmill", "yacht", "zone"
-    ]
-    """
-
     # Function to generate a list of unique random words
-    def generate_unique_random_words(available_words, num=3):
+    def extract_random_words(available_words, num=3):
         if len(available_words) < num:
             num = len(available_words)
         selected_words = random.sample(available_words, num)
@@ -89,7 +57,7 @@ def generate_card_pdf(words:str):
                 pdf.cell(title_width, 0.2, title, align='C', border='B')  # 'B' for bottom border (underline)
                 
                 # Generate unique random words
-                random_words = generate_unique_random_words(available_words)
+                random_words = extract_random_words(available_words)
                 
                 # Set regular font for list
                 pdf.set_font("Inkfree", size=16)

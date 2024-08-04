@@ -1,7 +1,7 @@
 import random
 from fpdf import FPDF
 
-def generate_card_pdf(words:str):
+def generate_card_pdf(words:str,title: str):
 
     # Sometimes the model separates the words in the comma-separated list with a space behind the comma.  Remove that space.
     # Then split the comma separated string into an array
@@ -13,8 +13,8 @@ def generate_card_pdf(words:str):
         if len(available_words) < num:
             num = len(available_words)
         selected_words = random.sample(available_words, num)
-        for noun in selected_words:
-            available_words.remove(noun)
+        for word in selected_words:
+            available_words.remove(word)
         return selected_words
 
     # Create instance of FPDF class
@@ -51,7 +51,7 @@ def generate_card_pdf(words:str):
                 pdf.set_font("InkfreeBold", size=18)
                 
                 # Add title (centered within the section and underlined)
-                title = "Choices"
+                #title = "Choices"
                 title_width = pdf.get_string_width(title)
                 pdf.set_xy(x + (section_width - title_width) / 2, y + 0.1)
                 pdf.cell(title_width, 0.2, title, align='C', border='B')  # 'B' for bottom border (underline)
@@ -67,9 +67,9 @@ def generate_card_pdf(words:str):
                 cursor_y = y + 0.35
                 
                 # Add text
-                for noun in random_words:
-                    pdf.set_xy(cursor_x - pdf.get_string_width(noun) / 2, cursor_y)
-                    pdf.cell(0, 0.18, noun)
+                for word in random_words:
+                    pdf.set_xy(cursor_x - pdf.get_string_width(word) / 2, cursor_y)
+                    pdf.cell(0, 0.18, word)
                     cursor_y += 0.18  # Move cursor down
 
     # Add pages and populate sections until all words are used
@@ -79,5 +79,5 @@ def generate_card_pdf(words:str):
         section_count += 1
 
     # Save the PDF
-    pdf.output("game.pdf")
+    pdf.output(title+".pdf")
     print(f"PDF generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")

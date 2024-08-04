@@ -4,16 +4,13 @@ import asyncio
 import generate_card_pdf
 import sys
 
+# Updated function to generate a game PDF with an array of words and a title
+def generate_pdf_carddeck(words: str, title: str) -> str:
+    print(f"Title: {title}")
+    print(f"Words: {words}")
 
-# New function to generate a game PDF with an array of words
-def generate_pdf_carddeck(words: str) -> str:
-    #hardcoded 
-    # my_words = ["apple", "banana", "car", "dog", "elephant"]
-    print(words)
-
-    generate_card_pdf.generate_card_pdf(words) #TO DO replace with words param
-    return json.dumps({"status": "PDF generated", "words": words})
-
+    generate_card_pdf.generate_card_pdf(words, title)  # Assuming generate_card_pdf function is updated to accept title
+    return json.dumps({"status": "PDF generated", "title": title, "words": words})
 
 async def run(model: str, prompt:str):
     client = ollama.AsyncClient()
@@ -29,16 +26,20 @@ async def run(model: str, prompt:str):
                 'type': 'function',
                 'function': {
                     'name': 'generate_pdf_carddeck',
-                    'description': 'Generate a PDF using the provided words',
+                    'description': 'Generate a PDF using the provided title and words',
                     'parameters': {
                         'type': 'object',
                         'properties': {
+                            'title': {
+                                'type': 'string',
+                                'description': 'The title for the game',
+                            },
                             'words': {
                                 'type': 'string',
                                 'description': 'A list of comma separated words to be used in the game',
                             },
                         },
-                        'required': ['words'],
+                        'required': ['title', 'words'],
                     },
                 },
             },
@@ -62,7 +63,7 @@ async def run(model: str, prompt:str):
         for tool in response['message']['tool_calls']:
             function_to_call = available_functions[tool['function']['name']]
             function_args = tool['function']['arguments']
-            function_response = function_to_call(function_args['words'])
+            function_response = function_to_call(function_args['words'], function_args['title'])
             # Add function response to the conversation
             messages.append(
                 {
@@ -90,6 +91,6 @@ if len(sys.argv) > 1:
 
     # CH: Use this when you are in the jupyter notebook:
     # await run('llama3.1',argument_1)
+    asyncio.run(run('llama3.1', prompt))
 else:
-    print("Error: Please provide a prompt in quotes as a command line argument, such as 'Can you generate a game pdf with a comma separated list of 50 unique nouns?'.")
-
+    print("Error: Please provide a string as a command line argument, such as 'Can you generate a game pdf with a title and a comma separated list of 50 unique nouns?'.")

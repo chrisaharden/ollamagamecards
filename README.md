@@ -1,6 +1,25 @@
 # ollamagamecards
 
 Example Usage: (see test.cmd)
-python .\maincards.py "Generate a pdf card deck with 50 unique funny objects with a title of Objects and use Footlight MT Light font"
-python .\maincards.py "Generate a pdf card deck with 50 unique verbs with a title of Verbs and use Comic Sans MS font"
-python .\maincards.py "Generate a pdf card deck with 50 unique stinky smells with a title of Smells and use Informal Roman font"
+python .\maincards.py pdfconfig.txt
+
+Example config.txt for Questions
+Content Length: 15
+Content Type: Questions
+Content : short "How Do I" questions about how to fix things around your home. Example: "How do I fix a leacky sink?"
+Title: How To Questions
+Title Font: Agency FB
+Title Font Size: 24
+Body Font: Times New Roman
+Body Font Size: 12
+
+Example config.txt for word lists
+Content Length: 15
+Content Type: Nouns
+Content : about the circus 
+Title: Circus Nouns
+Title Font: Agency FB
+Title Font Size: 24
+Body Font: Times New Roman
+Body Font Size: 12
+

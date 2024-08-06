@@ -1,0 +1,8 @@
+list 36 unique questions about batman
+
+
+
+These worked quite well for llama 3.1
+list 36 unique questions about batman.  output as an unnumbered list
+list 36 unique questions about batman.  no yapping. output as an unnumbered list
+list 36 unique questions about batman.  no yapping. output as a comma separated list

@@ -1,14 +1,11 @@
-Content Length: 15
+Content Length: 24
 Content Type: Questions
 Content : short "How Do I" questions about how to fix things around your home. Example: "How do I fix a leaky sink?"
 Content Title: How To Questions
-
-#Content Type: Nouns
-#Content : about the circus 
-#Content Title: Circus Nouns
-
 
 Title Font: Agency FB
 Title Font Size: 24
 Body Font: Times New Roman
 Body Font Size: 12
+
+Card Back Image: .\images\ComfyUI_00013_confusedhandyman.png

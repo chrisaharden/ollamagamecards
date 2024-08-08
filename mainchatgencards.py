@@ -1,6 +1,7 @@
 
 import ollama
 import generate_card_pdf
+import generate_cardbacks_pdf
 import sys
 from ollama import chat
 
@@ -67,5 +68,10 @@ if __name__ == "__main__":
 response = chat('llama3.1', messages=messages)
 print(response['message']['content'])
 
+#get some params
+imagePath:str = config.get('Card Back Image')
+contentTitle: str = config.get('Content Title') 
+
 # generate the cards
-generate_card_pdf.generate_card_pdf(response['message']['content'], config.get('Content Title'), config.get('Title Font'), False) #TODO remove the bQuestion param 
+generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, config.get('Title Font')) 
+generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf")

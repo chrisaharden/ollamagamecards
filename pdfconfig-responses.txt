@@ -1,0 +1,11 @@
+Content Length:72 #24x3words/card = 72
+Content Type: Nouns
+Content : random hilarious objects 
+Content Title: Responses
+
+Title Font: Agency FB
+Title Font Size: 24
+Body Font: Times New Roman
+Body Font Size: 12
+
+Card Back Image: .\images\ComfyUI_00012_madscientistrobot.png

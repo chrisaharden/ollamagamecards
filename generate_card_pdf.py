@@ -1,54 +1,10 @@
 import random
 from fpdf import FPDF
-from fontTools.ttLib import TTFont
+import font_helper
 import os
 
-#TODO: Move this to its own file
-def find_font_path(font_name, font_dir="C:\\Windows\\Fonts"):
-    """
-    Searches for the path of the specified font in the given directory.
 
-    Args:
-        font_name (str): The name of the font to search for.
-        font_dir (str): The directory to search in (default is Windows Fonts directory).
-
-    Returns:
-        str: The full path to the font if found, otherwise None.
-    """
-    for root, _, files in os.walk(font_dir):
-        for file in files:
-            if file.lower().endswith(('.ttf', '.otf')):  # Common font file extensions
-                try:
-                    font_path = os.path.join(root, file)
-                    font = TTFont(font_path)
-                    name_records = font.get('name').names
-                    for record in name_records:
-                        try:
-                            # Decode the font name based on the platform ID and encoding ID
-                            platform_id = record.platformID
-                            encoding_id = record.platEncID
-                            name_id = record.nameID
-                            if platform_id == 3 and encoding_id == 1:  # Windows Unicode
-                                font_full_name = record.string.decode('utf-16-be')
-                            elif platform_id == 1 and encoding_id == 0:  # Macintosh Roman
-                                font_full_name = record.string.decode('mac_roman')
-                            else:
-                                font_full_name = record.string.decode('utf-8')  # Fallback to UTF-8
-
-                            if font_name.lower() in font_full_name.lower():
-                                return font_path
-                        except UnicodeDecodeError:
-                            try:
-                                font_full_name = record.string.decode('latin1')
-                                if font_name.lower() in font_full_name.lower():
-                                    return font_path
-                            except Exception as e:
-                                print(f"Error decoding font name from {file}: {e}")
-                except Exception as e:
-                    print(f"Error reading font file {file}: {e}")
-    return None
-
-def generate_card_pdf(words:str, title: str, font:str, bQuestions: bool):
+def generate_card_pdf(words:str, title: str, font:str):
 
     # are we using questions? If so, we'll do special formatting and handling later
     bQuestions = '?' in words
@@ -85,7 +41,7 @@ def generate_card_pdf(words:str, title: str, font:str, bQuestions: bool):
 
     # Ensure the font is valid.  Default to Arial, if not.
     # Set regular font for list
-    font_path:str = find_font_path(font)
+    font_path:str = font_helper.find_font_path(font)
     if font_path:
         print(f"'{font}' font found.  Adding to PDF")
 
@@ -94,7 +50,6 @@ def generate_card_pdf(words:str, title: str, font:str, bQuestions: bool):
     else: 
         print(f"'{font}' font not found.  Substituted Arial")
         font = "Arial"  
-
 
 
     # Add custom font
@@ -141,7 +96,7 @@ def generate_card_pdf(words:str, title: str, font:str, bQuestions: bool):
                 
                 # Set initial cursor position for items
                 cursor_x = x + 0.1
-                cursor_y = y + 0.35
+                cursor_y = y + 0.45
                 
                 # Add text
                 for item in random_items:

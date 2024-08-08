@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "maincards Python Debugger: for maincards.py",
+            "name": "Python Debugger: mainchatgencards",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "pdfconfig.txt"
+                "pdfconfig-questions.txt"
             ]
         }
     ]

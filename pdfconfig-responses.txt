@@ -8,4 +8,6 @@ Title Font Size: 24
 Body Font: Times New Roman
 Body Font Size: 12
 
+Card Back Title: Responses
+Card Back Font: Arial
 Card Back Image: .\images\ComfyUI_00012_madscientistrobot.png

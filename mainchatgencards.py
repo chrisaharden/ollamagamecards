@@ -71,7 +71,10 @@ print(response['message']['content'])
 #get some params
 imagePath:str = config.get('Card Back Image')
 contentTitle: str = config.get('Content Title') 
+contentFont:str =  config.get('Title Font')
+cardBackTitle:str = config.get("Card Back Title")
+cardBackFont:str = config.get("Card Back Font")
 
 # generate the cards
-generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, config.get('Title Font')) 
-generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf")
+generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, contentFont) 
+generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)

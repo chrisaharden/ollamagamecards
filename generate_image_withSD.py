@@ -86,7 +86,7 @@ prompt_text = """
     "4": {
         "class_type": "CheckpointLoaderSimple",
         "inputs": {
-            "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+            "ckpt_name": "sd_xl_base_1.0.safetensors"
         }
     },
     "5": {

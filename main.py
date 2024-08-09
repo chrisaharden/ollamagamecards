@@ -80,7 +80,7 @@ cardBackImageGenContent:str = config.get("Card Back Gen Content")
 
 # generate the card image, or use the one specified?
 if('TRUE' == cardBackGenerate):
-    imagePath = generate_image_withSD.gen_image(cardBackImageGenContent)
+    imagePath = generate_image_withSD.gen_image(cardBackImageGenContent,cardBackTitle)
 
 # generate the cards
 generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, contentFont) 

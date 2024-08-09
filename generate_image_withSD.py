@@ -142,7 +142,7 @@ prompt_text = """
     }
 }
 """
-def gen_image(subject:str):
+def gen_image(subject:str, imageFileTitle:str):
     prompt = json.loads(prompt_text)
     #set the text prompt for our positive CLIPTextEncode
     prompt["6"]["inputs"]["text"] = subject
@@ -170,7 +170,7 @@ def gen_image(subject:str):
             from PIL import Image
             import io
             image = Image.open(io.BytesIO(image_data))
-            filename = f".\\images\\generatedimage_{node_id}_{i}.png"
+            filename = f".\\images\\generatedimage_{imageFileTitle}_{node_id}_{i}.png"
             image.save(filename)
             print(f"Saved {filename}")
     return filename

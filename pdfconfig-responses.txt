@@ -1,4 +1,4 @@
-Content Length:12 #4x3words/card = 12
+Content Length:36
 Content Type: Nouns
 Content : random hilarious objects 
 Content Title: Responses

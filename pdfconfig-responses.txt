@@ -1,4 +1,4 @@
-Content Length:72 #24x3words/card = 72
+Content Length:12 #4x3words/card = 12
 Content Type: Nouns
 Content : random hilarious objects 
 Content Title: Responses
@@ -10,4 +10,11 @@ Body Font Size: 12
 
 Card Back Title: Responses
 Card Back Font: Arial
-Card Back Image: .\images\ComfyUI_00012_madscientistrobot.png
+
+#Generate an image with ComfyUI
+Card Back Generate: TRUE
+Card Back Gen Content: crazy cartoon robot with hilarious tools 
+
+#Load a preferred image.  This is ignored when Card Back Generate is set to TRUE
+Card Back Image: .\images\ComfyUI_00012_madscientistrobot.png 
+

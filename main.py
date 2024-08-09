@@ -2,6 +2,7 @@
 import ollama
 import generate_card_pdf
 import generate_cardbacks_pdf
+import generate_image_withSD
 import sys
 from ollama import chat
 
@@ -74,6 +75,12 @@ contentTitle: str = config.get('Content Title')
 contentFont:str =  config.get('Title Font')
 cardBackTitle:str = config.get("Card Back Title")
 cardBackFont:str = config.get("Card Back Font")
+cardBackGenerate:str = config.get("Card Back Generate")
+cardBackImageGenContent:str = config.get("Card Back Gen Content")
+
+# generate the card image, or use the one specified?
+if('TRUE' == cardBackGenerate):
+    imagePath = generate_image_withSD.gen_image(cardBackImageGenContent)
 
 # generate the cards
 generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, contentFont) 

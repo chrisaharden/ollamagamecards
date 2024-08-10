@@ -12,8 +12,8 @@ Card Back Title: Questions
 Card Back Font: Arial
 
 #Generate an image with ComfyUI
-Card Back Generate: TRUE
+Card Back Generate: FALSE
 Card Back Gen Content: 2d cartoon style a confused handyman with lots of tools and question marks pipes water flooding 
 
 #Load a preferred image.  This is ignored when Card Back Generate is set to TRUE
-Card Back Image: .\images\ComfyUI_00013_confusedhandyman.png
+Card Back Image: .\images\ComfyUI_00025_FLUX1_ConfusedHandyMan.png

@@ -46,13 +46,24 @@ def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font=""
             # Draw a border around the square (optional)
             pdf.rect(x, y, square_size, square_size)
 
-            # Add title in white text in the bottom half of each cell
+            # Add title with black bar behind it
             if title:
                 pdf.add_font(font, '', font_path, uni=True)
                 pdf.set_font(font if font else 'Arial', 'B', 16)
+                
+                # Calculate text height and position
+                text_height = pdf.font_size
+                bar_height = text_height * 1.2  # Slightly taller than the text
+                text_y = y + square_size - (square_size / 4) - (bar_height / 2)
+                
+                # Draw black bar behind the text
+                pdf.set_fill_color(0, 0, 0)  # Black color
+                pdf.rect(x, text_y, square_size, bar_height, 'F')
+                
+                # Add white text on the black bar
                 pdf.set_text_color(255, 255, 255)  # White color
-                pdf.set_xy(x, y + square_size / 2)
-                pdf.cell(square_size, square_size / 2, title, 0, 0, 'C')
+                pdf.set_xy(x, text_y + (bar_height - text_height) / 2)  # Center text vertically in the bar
+                pdf.cell(square_size, text_height, title, 0, 0, 'C')
 
     # Save the PDF
     pdf.output(output_path)

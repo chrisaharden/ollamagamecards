@@ -1,13 +1,14 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, simpledialog
+from tkinter import filedialog, messagebox, simpledialog, scrolledtext
 import configparser
 import os
+import sys
 
 class ConfigEditor:
     def __init__(self, master):
         self.master = master
         self.master.title("Config Editor")
-        self.master.geometry("600x600")
+        self.master.geometry("800x800")  # Increased height to accommodate the log
 
         self.config = configparser.ConfigParser()
         self.current_file = None
@@ -21,9 +22,13 @@ class ConfigEditor:
         menubar.add_cascade(label="File", menu=filemenu)
         self.master.config(menu=menubar)
 
-        # Create scrollable frame
-        self.canvas = tk.Canvas(self.master)
-        self.scrollbar = tk.Scrollbar(self.master, orient="vertical", command=self.canvas.yview)
+        # Create main frame
+        main_frame = tk.Frame(self.master)
+        main_frame.pack(fill="both", expand=True)
+
+        # Create scrollable frame for config entries
+        self.canvas = tk.Canvas(main_frame)
+        self.scrollbar = tk.Scrollbar(main_frame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas)
 
         self.scrollable_frame.bind(
@@ -40,6 +45,33 @@ class ConfigEditor:
         self.scrollbar.pack(side="right", fill="y")
 
         self.entries = {}
+
+        # Create Run button
+        self.run_button = tk.Button(main_frame, text="Run", command=self.run_callback)
+        self.run_button.pack(pady=10)
+
+        # Create log text box
+        self.log_text = scrolledtext.ScrolledText(self.master, height=10)
+        self.log_text.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Redirect stdout and stderr to the log text box
+        sys.stdout = self.StdoutRedirector(self.log_text)
+        sys.stderr = self.StdoutRedirector(self.log_text)
+
+    def run_callback(self):
+        # This method will be overridden in the main script
+        print("Run button clicked")
+
+    class StdoutRedirector:
+        def __init__(self, text_widget):
+            self.text_widget = text_widget
+
+        def write(self, str):
+            self.text_widget.insert(tk.END, str)
+            self.text_widget.see(tk.END)
+
+        def flush(self):
+            pass
 
     def new_file(self):
         self.current_file = None
@@ -65,7 +97,7 @@ class ConfigEditor:
                 self.refresh_display()
 
     def open_file(self):
-        filepath = filedialog.askopenfilename(filetypes=[("Text files", "*.ini")])
+        filepath = filedialog.askopenfilename(filetypes=[("INI files", "*.ini")])
         if not filepath:
             return
 
@@ -75,7 +107,7 @@ class ConfigEditor:
 
     def save_file(self):
         if not self.current_file:
-            self.current_file = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+            self.current_file = filedialog.asksaveasfilename(defaultextension=".ini", filetypes=[("INI files", "*.ini")])
         
         if not self.current_file:
             return
@@ -88,7 +120,7 @@ class ConfigEditor:
         with open(self.current_file, 'w') as configfile:
             self.config.write(configfile)
 
-        messagebox.showinfo("Success", f"File saved: {self.current_file}")
+        #messagebox.showinfo("Success", f"File saved: {self.current_file}")
 
     def refresh_display(self):
         # Clear existing entries
@@ -108,7 +140,7 @@ class ConfigEditor:
                 frame = tk.Frame(self.scrollable_frame)
                 frame.pack(fill="x", padx=5, pady=2)
                 tk.Label(frame, text=key, width=20, anchor="w").pack(side="left")
-                entry = tk.Entry(frame)
+                entry = tk.Entry(frame, width=90)
                 entry.insert(0, value)
                 entry.pack(side="left", expand=True, fill="x")
                 self.entries[(section, key)] = entry

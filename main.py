@@ -5,27 +5,10 @@ import generate_image_withSD
 import sys
 from ollama import chat
 import configparser
+import tkinter as tk
+from ConfigEditor import ConfigEditor
 
-def parse_config_file(file_path):
-    config = configparser.ConfigParser()
-    config.read(file_path)
-    return config
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <config_file_path>")
-        sys.exit(1)
-    
-    file_path = sys.argv[1]
-    config = parse_config_file(file_path)
-
-    # Print all sections and their key-value pairs
-    for section in config.sections():
-        print(f"[{section}]")
-        for key, value in config[section].items():
-            print(f"{key}: {value}")
-        print()
-
+def run_card_generation(config):
     # use the Content Type to choose the right prompt
     content_type = config.get('General', 'Content Type', fallback='').lower()
     bQuestions = "question" in content_type
@@ -83,3 +66,28 @@ if __name__ == "__main__":
     # generate the cards
     generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, contentFont) 
     generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
+
+class MainApp(ConfigEditor):
+    def __init__(self, master):
+        super().__init__(master)
+        
+    def run_callback(self):
+        if not self.current_file:
+            tk.messagebox.showerror("Error", "Please open or save a configuration file first.")
+            return
+
+        print(f"Starting PDF generation.")
+             
+        # Save current changes
+        self.save_file()
+        print(f"Saved config file and starting PDF generation.")
+
+        # Run the card generation process
+        run_card_generation(self.config)
+        print("Card generation complete!")
+        tk.messagebox.showinfo("Success", "Card generation completed!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MainApp(root)
+    root.mainloop()

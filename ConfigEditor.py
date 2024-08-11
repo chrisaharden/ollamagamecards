@@ -3,12 +3,14 @@ from tkinter import filedialog, messagebox, simpledialog, scrolledtext
 import configparser
 import os
 import sys
+import queue
+import threading
 
 class ConfigEditor:
     def __init__(self, master):
         self.master = master
-        self.master.title("Config Editor")
-        self.master.geometry("800x800")  # Increased height to accommodate the log
+        self.master.title("AI Game Card Generator")
+        self.master.geometry("800x600")  
 
         self.config = configparser.ConfigParser()
         self.current_file = None
@@ -47,32 +49,46 @@ class ConfigEditor:
         self.entries = {}
 
         # Create Run button
-        self.run_button = tk.Button(main_frame, text="Run", command=self.run_callback)
-        self.run_button.pack(pady=10)
+        self.run_button = tk.Button(main_frame, text="Generate PDF", command=self.run_callback,
+                                    height=10, width=15, font=("Arial", 14, "bold"),
+                                    bg="#007bff", fg="white")
+        self.run_button.pack(pady=20)
+
+        # Add hover effect
+        self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg="#4da3ff"))
+        self.run_button.bind("<Leave>", lambda e: self.run_button.config(bg="#007bff"))
 
         # Create log text box
-        self.log_text = scrolledtext.ScrolledText(self.master, height=10)
+        self.log_text = scrolledtext.ScrolledText(self.master, height=5)
         self.log_text.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Redirect stdout and stderr to the log text box
-        sys.stdout = self.StdoutRedirector(self.log_text)
-        sys.stderr = self.StdoutRedirector(self.log_text)
+        self.log_queue = queue.Queue()
+        self.master.after(100, self.check_log_queue)
 
     def run_callback(self):
         # This method will be overridden in the main script
-        print("Run button clicked")
+        self.log("Run button clicked")
 
     class StdoutRedirector:
-        def __init__(self, text_widget):
-            self.text_widget = text_widget
+        def __init__(self, log_queue):
+            self.log_queue = log_queue
 
-        def write(self, str):
-            self.text_widget.insert(tk.END, str)
-            self.text_widget.see(tk.END)
+        def write(self, message):
+            self.log_queue.put(message.strip())
 
         def flush(self):
             pass
 
+    def log(self, message):
+        self.log_queue.put(message)
+
+    def check_log_queue(self):
+        while not self.log_queue.empty():
+            message = self.log_queue.get()
+            self.log_text.insert(tk.END, message + '\n')
+            self.log_text.see(tk.END)
+        self.master.after(100, self.check_log_queue)
+    
     def new_file(self):
         self.current_file = None
         self.config = configparser.ConfigParser()
@@ -119,8 +135,6 @@ class ConfigEditor:
         # Save to file
         with open(self.current_file, 'w') as configfile:
             self.config.write(configfile)
-
-        #messagebox.showinfo("Success", f"File saved: {self.current_file}")
 
     def refresh_display(self):
         # Clear existing entries

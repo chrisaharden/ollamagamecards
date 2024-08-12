@@ -5,6 +5,15 @@ import os
 import sys
 import queue
 import threading
+from PIL import Image, ImageTk
+
+# Color scheme (from Gemini)
+BACKGROUND_COLOR = "#282c34" # A deeper, more atmospheric base
+DARKER_BACKGROUND = "#181a1f" # For accents or deeper elements
+TEXT_COLOR = "#ffffff" # White remains a strong choice for text
+BUTTON_BG = "#363a40" # A darker button base for better contrast
+BUTTON_FG = "#ffffff" # White text for button clarity
+BUTTON_HOVER_BG = "#4c5056" # A slightly lighter hover state for buttons
 
 class ConfigEditor:
     def __init__(self, master):
@@ -14,6 +23,9 @@ class ConfigEditor:
 
         self.config = configparser.ConfigParser()
         self.current_file = None
+        
+        # Set window background color
+        self.master.configure(bg=BACKGROUND_COLOR)
 
         # Create menu
         menubar = tk.Menu(self.master)
@@ -24,14 +36,14 @@ class ConfigEditor:
         menubar.add_cascade(label="File", menu=filemenu)
         self.master.config(menu=menubar)
 
-        # Create main frame
-        main_frame = tk.Frame(self.master)
+        # Create main frame with matching background
+        main_frame = tk.Frame(self.master, bg=BACKGROUND_COLOR)
         main_frame.pack(fill="both", expand=True)
 
         # Create scrollable frame for config entries
-        self.canvas = tk.Canvas(main_frame)
+        self.canvas = tk.Canvas(main_frame, bg=BACKGROUND_COLOR, borderwidth=0, highlightthickness=0)
         self.scrollbar = tk.Scrollbar(main_frame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = tk.Frame(self.canvas)
+        self.scrollable_frame = tk.Frame(self.canvas, bg=BACKGROUND_COLOR)
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -49,17 +61,15 @@ class ConfigEditor:
         self.entries = {}
 
         # Create Run button
-        self.run_button = tk.Button(main_frame, text="Generate PDF", command=self.run_callback,
-                                    height=10, width=15, font=("Arial", 14, "bold"),
-                                    bg="#007bff", fg="white")
-        self.run_button.pack(pady=20)
+        self.run_button = tk.Button(main_frame, text="Generate PDF", command=self.run_callback, height=10, width=15, font=("Arial", 14, "bold"), bg=BUTTON_BG, fg=BUTTON_FG)
+        self.run_button.pack(pady=20,padx=(10, 20))
 
         # Add hover effect
-        self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg="#4da3ff"))
-        self.run_button.bind("<Leave>", lambda e: self.run_button.config(bg="#007bff"))
+        self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg=BUTTON_HOVER_BG))
+        self.run_button.bind("<Leave>", lambda e: self.run_button.config(bg=BUTTON_BG))
 
-        # Create log text box
-        self.log_text = scrolledtext.ScrolledText(self.master, height=5)
+        # Create log text box with dark theme
+        self.log_text = scrolledtext.ScrolledText(self.master, height=5, bg=DARKER_BACKGROUND, fg=TEXT_COLOR)
         self.log_text.pack(fill="both", expand=True, padx=10, pady=10)
 
         self.log_queue = queue.Queue()
@@ -142,24 +152,47 @@ class ConfigEditor:
             widget.destroy()
         self.entries.clear()
 
+    def create_add_button(self, parent, section):
+        button = tk.Button(parent, text="+", command=lambda s=section: self.add_new_key(s),
+                           bg=BUTTON_BG, fg=BUTTON_FG)
+        button.pack(side="right")
+
+        # Add hover effect
+        button.bind("<Enter>", lambda e: button.config(bg=BUTTON_HOVER_BG))
+        button.bind("<Leave>", lambda e: button.config(bg=BUTTON_BG))
+
+        return button
+    
+    def refresh_display(self):
+        # Clear existing entries
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+        self.entries.clear()
+
         # Create input fields for each parameter
         for section in self.config.sections():
-            section_frame = tk.Frame(self.scrollable_frame)
+            section_frame = tk.Frame(self.scrollable_frame, bg=BACKGROUND_COLOR)
             section_frame.pack(fill="x", padx=5, pady=(10, 5))
             
-            tk.Label(section_frame, text=section, font=("Arial", 12, "bold")).pack(side="left")
-            tk.Button(section_frame, text="+", command=lambda s=section: self.add_new_key(s)).pack(side="right")
+            tk.Label(section_frame, text=section, font=("Arial", 12, "bold"), 
+                    bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="left")
+            self.create_add_button(section_frame, section)  # Use the new method here
 
             for key, value in self.config[section].items():
-                frame = tk.Frame(self.scrollable_frame)
+                frame = tk.Frame(self.scrollable_frame, bg=BACKGROUND_COLOR)
                 frame.pack(fill="x", padx=5, pady=2)
-                tk.Label(frame, text=key, width=20, anchor="w").pack(side="left")
-                entry = tk.Entry(frame, width=90)
+                tk.Label(frame, text=key, width=20, anchor="w", 
+                        bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="left")
+                entry = tk.Entry(frame, width=90, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
+                                insertbackground=TEXT_COLOR)
                 entry.insert(0, value)
                 entry.pack(side="left", expand=True, fill="x")
                 self.entries[(section, key)] = entry
 
 if __name__ == "__main__":
     root = tk.Tk()
+    ico = Image.open('./gameicon-midjourney.png')
+    photo = ImageTk.PhotoImage(ico)
+    root.wm_iconphoto(False, photo)
     app = ConfigEditor(root)
     root.mainloop()

@@ -66,7 +66,8 @@ class MainApp(ConfigEditor):
                 }
             ]
 
-            self.log(f"Contacting model...\n")
+            modelName:str = 'llama3.1'
+            self.log(f"Sending chat to {modelName}...\n")
             response = chat('llama3.1', messages=messages)
             self.log('Model Response:\r\n'+response['message']['content'] + '\n')
 

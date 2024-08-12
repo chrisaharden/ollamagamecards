@@ -60,9 +60,26 @@ class ConfigEditor:
 
         self.entries = {}
 
-        # Create Run button
-        self.run_button = tk.Button(main_frame, text="Generate PDF", command=self.run_callback, height=10, width=15, font=("Arial", 14, "bold"), bg=BUTTON_BG, fg=BUTTON_FG)
-        self.run_button.pack(pady=20,padx=(10, 20))
+
+        # Create a frame for the button at the bottom
+        button_frame = tk.Frame(main_frame, bg=BACKGROUND_COLOR)
+        button_frame.pack(side="bottom", fill="x", pady=10)
+
+        # Load and resize the Run button image
+        image = Image.open("GeneratePDFButtonArt-midjourney.png")
+        image = image.resize((150, 150))  # Adjust the size as needed
+        photo = ImageTk.PhotoImage(image)
+
+        # Create Run button (note height and width are in pixels, when you add an image.)
+        tk.Label(button_frame, text="Generate PDF", font=("Arial", 12, "bold"), 
+        bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="top")
+        self.run_button = tk.Button(button_frame, command=self.run_callback,
+                                    height=150, width=150, font=("Arial", 14, "bold"),
+                                    bg=BUTTON_BG, fg=BUTTON_FG,
+                                    image=photo, compound=tk.LEFT)
+        self.run_button.image = photo  # Keep a reference to avoid garbage collection
+        self.run_button.pack(pady=5, padx=(5, 20))
+
 
         # Add hover effect
         self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg=BUTTON_HOVER_BG))
@@ -70,7 +87,7 @@ class ConfigEditor:
 
         # Create log text box with dark theme
         self.log_text = scrolledtext.ScrolledText(self.master, height=5, bg=DARKER_BACKGROUND, fg=TEXT_COLOR)
-        self.log_text.pack(fill="both", expand=True, padx=10, pady=10)
+        self.log_text.pack(fill="both", expand=True, padx=0, pady=0)
 
         self.log_queue = queue.Queue()
         self.master.after(100, self.check_log_queue)

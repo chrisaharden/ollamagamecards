@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, simpledialog, scrolledtext
+from tkinter import ttk, filedialog, messagebox, simpledialog, scrolledtext
 import configparser
 import os
 import sys
@@ -8,12 +8,12 @@ import threading
 from PIL import Image, ImageTk
 
 # Color scheme (from Gemini)
-BACKGROUND_COLOR = "#282c34" # A deeper, more atmospheric base
-DARKER_BACKGROUND = "#181a1f" # For accents or deeper elements
-TEXT_COLOR = "#ffffff" # White remains a strong choice for text
-BUTTON_BG = "#363a40" # A darker button base for better contrast
-BUTTON_FG = "#ffffff" # White text for button clarity
-BUTTON_HOVER_BG = "#4c5056" # A slightly lighter hover state for buttons
+BACKGROUND_COLOR = "#282c34"  # A deeper, more atmospheric base
+DARKER_BACKGROUND = "#181a1f"  # For accents or deeper elements
+TEXT_COLOR = "#ffffff"  # White remains a strong choice for text
+BUTTON_BG = "#363a40"  # A darker button base for better contrast
+BUTTON_FG = "#ffffff"  # White text for button clarity
+BUTTON_HOVER_BG = "#4c5056"  # A slightly lighter hover state for buttons
 
 class ConfigEditor:
     def __init__(self, master):
@@ -59,7 +59,7 @@ class ConfigEditor:
         self.scrollbar.pack(side="right", fill="y")
 
         self.entries = {}
-
+        self.dropdowns = {}  # New dictionary to store dropdown widgets
 
         # Create a frame for the button at the bottom
         button_frame = tk.Frame(main_frame, bg=BACKGROUND_COLOR)
@@ -79,7 +79,6 @@ class ConfigEditor:
                                     image=photo, compound=tk.LEFT)
         self.run_button.image = photo  # Keep a reference to avoid garbage collection
         self.run_button.pack(pady=5, padx=(5, 20))
-
 
         # Add hover effect
         self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg=BUTTON_HOVER_BG))
@@ -124,6 +123,7 @@ class ConfigEditor:
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         self.entries.clear()
+        self.dropdowns.clear()
 
         # Ask for a new section name
         section_name = simpledialog.askstring("New Section", "Enter a name for the new section:")
@@ -158,6 +158,10 @@ class ConfigEditor:
         # Update config with new values
         for (section, key), entry in self.entries.items():
             self.config[section][key] = entry.get()
+        
+        # Update config with dropdown values
+        for (section, key), dropdown in self.dropdowns.items():
+            self.config[section][key] = dropdown.get()
 
         # Save to file
         with open(self.current_file, 'w') as configfile:
@@ -185,6 +189,7 @@ class ConfigEditor:
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         self.entries.clear()
+        self.dropdowns.clear()
 
         # Create input fields for each parameter
         for section in self.config.sections():
@@ -193,18 +198,29 @@ class ConfigEditor:
             
             tk.Label(section_frame, text=section, font=("Arial", 12, "bold"), 
                     bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="left")
-            self.create_add_button(section_frame, section)  # Use the new method here
+            self.create_add_button(section_frame, section)
 
             for key, value in self.config[section].items():
+                key = key.title()
                 frame = tk.Frame(self.scrollable_frame, bg=BACKGROUND_COLOR)
                 frame.pack(fill="x", padx=5, pady=2)
                 tk.Label(frame, text=key, width=20, anchor="w", 
                         bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="left")
-                entry = tk.Entry(frame, width=90, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
-                                insertbackground=TEXT_COLOR)
-                entry.insert(0, value)
-                entry.pack(side="left", expand=True, fill="x")
-                self.entries[(section, key)] = entry
+                
+                if section == 'General' and key == 'Content Type':
+                    # Create a dropdown for Content Type
+                    dropdown = ttk.Combobox(frame, values=["Words", "Questions", "QuestionsAndAnswers"],
+                                            width=88, state="readonly")
+                    dropdown.set(value)  # Set the current value
+                    dropdown.pack(side="left", expand=True, fill="x")
+                    self.dropdowns[(section, key)] = dropdown
+                else:
+                    # Create a regular entry for other fields
+                    entry = tk.Entry(frame, width=90, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
+                                    insertbackground=TEXT_COLOR)
+                    entry.insert(0, value)
+                    entry.pack(side="left", expand=True, fill="x")
+                    self.entries[(section, key)] = entry
 
 if __name__ == "__main__":
     root = tk.Tk()

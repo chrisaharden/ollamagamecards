@@ -222,10 +222,10 @@ class ConfigEditor:
                     entry.pack(side="left", expand=True, fill="x")
                     self.entries[(section, key)] = entry
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    ico = Image.open('./gameicon-midjourney.png')
-    photo = ImageTk.PhotoImage(ico)
-    root.wm_iconphoto(False, photo)
-    app = ConfigEditor(root)
-    root.mainloop()
+#if __name__ == "__main__":
+    #root = tk.Tk()
+    #ico = Image.open('./gameicon-midjourney.png')
+    #photo = ImageTk.PhotoImage(ico)
+    #root.wm_iconphoto(False, photo)
+    #app = ConfigEditor(root)
+    #root.mainloop()

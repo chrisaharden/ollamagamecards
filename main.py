@@ -8,6 +8,7 @@ import configparser
 import tkinter as tk
 from ConfigEditor import ConfigEditor
 import threading
+from PIL import Image, ImageTk
 
 class MainApp(ConfigEditor):
     def __init__(self, master):
@@ -29,36 +30,54 @@ class MainApp(ConfigEditor):
         try:
             self.log(f"Prepping prompts...\n")
 
-            # use the Content Type to choose the right prompt
             content_type = self.config.get('General', 'Content Type', fallback='').lower()
-            bQuestions = "question" in content_type
 
-            if bQuestions:
-                systemPrompt = "Output questions as list with question marks at the end of each question. " \
-                            "Do not include any carriage returns. " \
-                            "Do not include any line feeds. " \
-                            "Example: How are you? What are you doing? What is that?"
-            else:
-                systemPrompt = "Output a comma separated list. " \
-                            "Do not include any carriage returns. " \
-                            "Do not include any line feeds. " \
-                            "Example: boy, girl, dog"
+            content_type_prompts = {
+                'words': {
+                    'system_prompt': "Output a comma separated list. "
+                                    "Do not include any carriage returns. "
+                                    "Do not include any line feeds. "
+                                    "Example: boy, girl, dog",
+                    'output_format': "comma separated list"
+                },
+                'questions': {
+                    'system_prompt': "Output questions as list with question marks at the end of each question. "
+                                    "Do not include any carriage returns. "
+                                    "Do not include any line feeds. "
+                                    "Example: How are you? What are you doing? What is that?",
+                    'output_format': "list of questions"
+                },
+                'questionsandanswers': {
+                    'system_prompt': "Output questions and answers in an unnumbered list.  no yapping. Example:\r\n"\
+                                    "Is this a question 1?\r\n"\
+                                    "This is the answer 1.\r\n"\
+                                    "Is this a question 2?\r\n"\
+                                    "This is the answer to 2.\r\n"\
+                                    "Is this a question 3?\r\n"\
+                                    "This is the answer to 3.",
+                    'output_format': "alternating list of questions and answers in an unnumbered list."
+                }
+            }
 
-            # Build a sentence that uses all the key value pairs in the Content description.
+            selected_prompt = content_type_prompts.get(content_type, content_type_prompts['words'])
+            system_prompt = selected_prompt['system_prompt']
+            output_format = selected_prompt['output_format']
+
             content_length = self.config.get('General', 'Content Length', fallback='10')
             content = self.config.get('General', 'Content', fallback='')
-            userPrompt = f"List {content_length} unique {content}. no yapping."
-            self.log(f"userPrompt: {userPrompt}\n")
-            self.log(f"systemPrompt: {systemPrompt}\n")
+            user_prompt = f"List {content_length} unique {content} in the format of a {output_format}. No yapping."
+
+            self.log(f"userPrompt: {user_prompt}\n")
+            self.log(f"systemPrompt: {system_prompt}\n")
 
             messages = [
                 {
                     'role': 'system',
-                    'content': systemPrompt
+                    'content': system_prompt
                 },
                 {
                     'role': 'user',
-                    'content': userPrompt,
+                    'content': user_prompt,
                 },
                 {
                     'role':'assistant',
@@ -98,6 +117,9 @@ class MainApp(ConfigEditor):
 
 if __name__ == "__main__":
     root = tk.Tk()
+    ico = Image.open('./gameicon-midjourney.png')
+    photo = ImageTk.PhotoImage(ico)
+    root.wm_iconphoto(False, photo)
     app = MainApp(root)
     sys.stdout = app.StdoutRedirector(app.log_queue)
     sys.stderr = app.StdoutRedirector(app.log_queue)

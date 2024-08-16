@@ -4,36 +4,18 @@ import font_helper
 import os
 
 
-def generate_card_pdf(words:str, title: str, font:str):
+def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, items_per_card:int=1):
 
-    # are we using questions? If so, we'll do special formatting and handling later
-    bQuestions = '?' in words
-
-    # remove a line feed that is at the beginning of the list     
-    words = words.replace(" \n", "")
-    words = words.replace("\n", "")
-
-    if bQuestions:
-        # Sometimes the model separates the words in the questio nmark-separated list with a space behind the questionmark.  Remove that space.
-        # Then split the question mark-separated string into an array
-        words = words.replace("?, ", "?\r\n")
-        words = words.replace("? ", "?\r\n")
-        all_items = words.split("\r\n")
-    else:
-        # Sometimes the model separates the words in the comma-separated list with a space behind the comma.  Remove that space.
-        # Then split the comma separated string into an array
-        words = words.replace(", ", ",")
-        all_items = words.split(",")
-
+    #we are using all_items as the name.  TODO: later change to just using contentList
+    all_items = contentList
     print(f"Number of items: {len(all_items)}")
 
-    # Function to generate a list of unique random items (words or questions)
-    def extract_random_items(available_items, num):
+    # Function to extract a list of unique items (words or questions)
+    def extract_items(available_items, num):
         if len(available_items) < num:
             num = len(available_items)
-        selected_items = random.sample(available_items, num)
-        for item in selected_items:
-            available_items.remove(item)
+        selected_items = available_items[:num]
+        del available_items[:num]
         return selected_items
 
     # Create instance of FPDF class
@@ -60,7 +42,10 @@ def generate_card_pdf(words:str, title: str, font:str):
     # Dimensions
     section_width = 2.5
     section_height = 2.5
+    title_height = .2
     margin = 0.5
+    body_height = section_height - title_height - margin
+    line_height = 0.18
 
     # Calculate positions
     x_positions = [margin + (section_width * i) for i in range(3)]
@@ -86,30 +71,45 @@ def generate_card_pdf(words:str, title: str, font:str):
                 # Add title (centered within the section and underlined)
                 title_width = pdf.get_string_width(title)
                 pdf.set_xy(x + (section_width - title_width) / 2, y + 0.1)
-                pdf.cell(title_width, 0.2, title, align='C', border='B')  # 'B' for bottom border (underline)
+                pdf.cell(title_width, title_height, title, align='C', border='B')  # 'B' for bottom border (underline)
                 
                 # Generate unique random items
-                random_items = extract_random_items(available_items,num=1 if bQuestions else 3) #3 words per card or 1 question
+                extracted_items = extract_items(available_items, items_per_card) 
                 
                 # Set regular font for list
-                pdf.set_font(font, size=12 if bQuestions else 16)
+                pdf.set_font(font, size=12 if content_type == 'Questions' else 16)
                 
                 # Set initial cursor position for items
                 cursor_x = x + 0.1
                 cursor_y = y + 0.45
-                
-                # Add text
-                for item in random_items:
-                    if bQuestions:
+
+                # Add text to body
+                for index, item in enumerate(extracted_items):
+                    if content_type == 'questions':
                         # For questions, use multi_cell to allow text wrapping
                         pdf.set_xy(cursor_x, cursor_y)
-                        pdf.multi_cell(section_width - 0.2, 0.18, item, align='C')
-                        cursor_y = pdf.get_y() + 0.1  # Add some space between questions
-                    else:
+                        pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
+                        
+                    elif content_type == 'questionsandanswers':
+                        # extract_items() grabs two lines at once for questions and answers 
+                        if index % 2 == 0: #even entries are questions
+                            # For questions and answers, use multi_cell to allow text wrapping
+                            pdf.set_xy(cursor_x, cursor_y)
+                            pdf.set_font(font, size=12)
+                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
+                        else: #odd entries are answers.  move them down and print upside down
+                            answer_cursor_y=cursor_y+body_height-line_height*2
+                            pdf.set_xy(cursor_x,answer_cursor_y)
+                            pdf.set_font(font, size=8)
+                            #pdf.rotate(180, x, y)
+                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
+                            #pdf.rotate(0)
+
+                    else: #assuming "words"
                         # For single words, center them
                         pdf.set_xy(cursor_x + (section_width - 0.2) / 2 - pdf.get_string_width(item) / 2, cursor_y)
-                        pdf.cell(0, 0.18, item)
-                        cursor_y += 0.18  # Move cursor down
+                        pdf.cell(0, line_height, item)
+                        cursor_y += line_height  # Move cursor down
 
     # Add pages and populate sections until all items are used
     section_count = 0
@@ -119,4 +119,4 @@ def generate_card_pdf(words:str, title: str, font:str):
 
     # Save the PDF
     pdf.output(title+".pdf")
-    print(f"PDF generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")
+    print(f"{title}.pdf generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")

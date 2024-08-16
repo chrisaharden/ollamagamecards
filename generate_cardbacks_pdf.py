@@ -67,6 +67,7 @@ def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font=""
 
     # Save the PDF
     pdf.output(output_path)
+    print(f"{output_path}.pdf generated successfully!.")
 
 # Example usage:
 # create_image_grid("dog.png", "dog_grid.pdf", font="Arial", title="My Dog")

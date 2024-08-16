@@ -34,26 +34,26 @@ class MainApp(ConfigEditor):
 
             content_type_prompts = {
                 'words': {
-                    'system_prompt': "Output a comma separated list. "
-                                    "Do not include any carriage returns. "
-                                    "Do not include any line feeds. "
-                                    "Example: boy, girl, dog",
-                    'output_format': "comma separated list"
+                    'system_prompt': "Output words in an unnumbered list.  no yapping. Example:"\
+                                    "cat\n"\
+                                    "dog\n"\
+                                    "goat",
+                    'output_format': "words in an unnumbered list"
                 },
                 'questions': {
-                    'system_prompt': "Output questions as list with question marks at the end of each question. "
-                                    "Do not include any carriage returns. "
-                                    "Do not include any line feeds. "
-                                    "Example: How are you? What are you doing? What is that?",
-                    'output_format': "list of questions"
+                    'system_prompt': "Output questions as an unnumbered list with question marks at the end of each question. no yapping. Example:"\
+                                    "Is this a question 1?\n"\
+                                    "Is this a question 2?\n"\
+                                    "Is this a question 3?\n",
+                    'output_format': "unnumberd list of questions"
                 },
                 'questionsandanswers': {
-                    'system_prompt': "Output questions and answers in an unnumbered list.  no yapping. Example:\r\n"\
-                                    "Is this a question 1?\r\n"\
-                                    "This is the answer 1.\r\n"\
-                                    "Is this a question 2?\r\n"\
-                                    "This is the answer to 2.\r\n"\
-                                    "Is this a question 3?\r\n"\
+                    'system_prompt': "Output questions and answers in an unnumbered list.  no yapping. Example:"\
+                                    "Is this a question 1?\n"\
+                                    "This is the answer 1.\n"\
+                                    "Is this a question 2?\n"\
+                                    "This is the answer to 2.\n"\
+                                    "Is this a question 3?\n"\
                                     "This is the answer to 3.",
                     'output_format': "alternating list of questions and answers in an unnumbered list."
                 }
@@ -90,14 +90,26 @@ class MainApp(ConfigEditor):
             response = chat('llama3.1', messages=messages)
             self.log('Model Response:\r\n'+response['message']['content'] + '\n')
 
+            # process the response by first clean any extra line feeds or other issues the model output has
+            # split the response string into a list based on the line feeds
+            response_content = response['message']['content']
+            response_content = response_content.replace(" \n\n", "") 
+            response_content = response_content.replace(" \n", "")
+            contentList = response_content.split("\n")
+
             # get some params
-            imagePath = self.config.get('Card Back', 'Image', fallback='')
-            contentTitle = self.config.get('General', 'Content Title', fallback='Default Title')
-            contentFont = self.config.get('Fonts', 'Title Font', fallback='Arial')
-            cardBackTitle = self.config.get("Card Back", "Title", fallback='Back Title')
-            cardBackFont = self.config.get("Card Back", "Font", fallback='Arial')
-            cardBackGenerate = self.config.get("Card Back", "Generate", fallback='FALSE')
-            cardBackImageGenContent = self.config.get("Card Back", "Gen Content", fallback='')
+            contentTitle =              self.config.get('General', 'Content Title', fallback='Default Title')
+            itemsPerCard =              int(self.config.get('General', "Items Per Card",fallback = '1'))
+            contentFont =               self.config.get('Fonts', 'Title Font', fallback='Arial')
+            cardBackTitle =             self.config.get("Card Back", "Title", fallback='Back Title')
+            cardBackFont =              self.config.get("Card Back", "Font", fallback='Arial')
+            cardBackGenerate =          self.config.get("Card Back", "Generate", fallback='FALSE')
+            cardBackImageGenContent =   self.config.get("Card Back", "Gen Content", fallback='')
+            imagePath =                 self.config.get('Card Back', 'Image', fallback='')
+
+            # Note that with questions and answers, since llama3.1 sends them on different lines, we double the itemsPerCard.
+            # This causes the pdf generator logic to grab a question and then an answer for each card.
+            if (content_type == 'questionsandanswers'): itemsPerCard *= 2
 
             # generate the card image, or use the one specified?
             if cardBackGenerate.upper() == 'TRUE':
@@ -105,7 +117,7 @@ class MainApp(ConfigEditor):
 
             # generate the cards
             self.log(f"Generating Cards...\n")
-            generate_card_pdf.generate_card_pdf(response['message']['content'], contentTitle, contentFont) 
+            generate_card_pdf.generate_card_pdf(content_type,contentList, contentTitle, contentFont, itemsPerCard) 
             generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
             self.log(f"Card generation completed!")
 

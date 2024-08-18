@@ -54,6 +54,14 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # Create a copy of all_items to work with
     available_items = all_items.copy()
 
+
+    def get_multi_cell_height(pdf, w, txt):
+        start_x, start_y = pdf.get_x(), pdf.get_y()
+        pdf.multi_cell(w, line_height, txt) #make a cell, but don't write anything
+        height = pdf.get_y() - start_y
+        pdf.set_xy(start_x, start_y)
+        return height
+
     # Function to add a new page and populate it with sections
     def add_page_with_sections(pdf, x_positions, y_positions, available_items):
         pdf.add_page()
@@ -85,6 +93,10 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
 
                 # Add text to body
                 for index, item in enumerate(extracted_items):
+                    
+                    #debug
+                    #item = f"{x},{y}:"+item
+
                     if content_type == 'questions':
                         # For questions, use multi_cell to allow text wrapping
                         pdf.set_xy(cursor_x, cursor_y)
@@ -93,17 +105,17 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                     elif content_type == 'questionsandanswers':
                         # extract_items() grabs two lines at once for questions and answers 
                         if index % 2 == 0: #even entries are questions
-                            # For questions and answers, use multi_cell to allow text wrapping
+                            if "?" not in item:
+                                print("Question is missing a question mark, or array is off by one")
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=12)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
-                        else: #odd entries are answers.  move them down and print upside down
-                            answer_cursor_y=cursor_y+body_height-line_height*2
+                        else: #odd entries are answers.  move them down.
+                            answer_height = get_multi_cell_height(pdf,section_width,item)
+                            answer_cursor_y=cursor_y+body_height-answer_height
                             pdf.set_xy(cursor_x,answer_cursor_y)
                             pdf.set_font(font, size=8)
-                            #pdf.rotate(180, x, y)
-                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
-                            #pdf.rotate(0)
+                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C',border=1)
 
                     else: #assuming "words"
                         # For single words, center them

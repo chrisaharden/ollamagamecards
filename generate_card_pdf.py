@@ -17,7 +17,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
         selected_items = available_items[:num]
         del available_items[:num]
         return selected_items
-
+    
     # Create instance of FPDF class
     pdf = FPDF('P', 'in', 'Letter')  # 'P' for portrait, 'in' for inches, 'Letter' for 8.5x11 in
 
@@ -107,6 +107,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                         if index % 2 == 0: #even entries are questions
                             if "?" not in item:
                                 print("Question is missing a question mark, or array is off by one")
+
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=12)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')

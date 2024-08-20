@@ -3,6 +3,8 @@ import generate_card_pdf
 import generate_cardbacks_pdf
 import generate_image_withSD
 import sys
+import os
+import argparse
 from ollama import chat
 import configparser
 import tkinter as tk
@@ -10,51 +12,32 @@ from ConfigEditor import ConfigEditor
 import threading
 from PIL import Image, ImageTk
 
-class MainApp(ConfigEditor):
-    def __init__(self, master):
-        super().__init__(master)
-        
-    def run_callback(self):
-        if not self.current_file:
-            tk.messagebox.showerror("Error", "Please open or save a configuration file first.")
-            return
-             
-        # Save current changes
-        self.save_file()
-        self.log("Saved config file and starting PDF generation.\n")
+class CardGenerator:
+    def __init__(self, config):
+        self.config = config
 
-        # Run the card generation process in a separate thread
-        threading.Thread(target=self.run_card_generation, daemon=True).start()
-
-    def run_card_generation(self):
+    def run_card_generation(self, log_func=print):
         try:
-            self.log(f"Prepping prompts...\n")
+            log_func("Prepping prompts...\n")
 
             content_type = self.config.get('General', 'Content Type', fallback='').lower()
 
             content_type_prompts = {
                 'words': {
-                    'system_prompt': "Output words in an unnumbered list.  no yapping. Example:"\
-                                    "cat\n"\
-                                    "dog\n"\
-                                    "goat",
+                    'system_prompt': "Output words in an unnumbered list. no yapping. Example:\n"
+                                     "cat\ndog\ngoat",
                     'output_format': "words in an unnumbered list"
                 },
                 'questions': {
-                    'system_prompt': "Output questions as an unnumbered list with question marks at the end of each question. no yapping. Example:"\
-                                    "Is this a question 1?\n"\
-                                    "Is this a question 2?\n"\
-                                    "Is this a question 3?\n",
-                    'output_format': "unnumberd list of questions"
+                    'system_prompt': "Output questions as an unnumbered list with question marks at the end of each question. no yapping. Example:\n"
+                                     "Is this a question 1?\nIs this a question 2?\nIs this a question 3?\n",
+                    'output_format': "unnumbered list of questions"
                 },
                 'questionsandanswers': {
-                    'system_prompt': "Output questions and answers in an unnumbered list.  no yapping. Example:"\
-                                    "Is this a question 1?\n"\
-                                    "This is the answer 1.\n"\
-                                    "Is this a question 2?\n"\
-                                    "This is the answer to 2.\n"\
-                                    "Is this a question 3?\n"\
-                                    "This is the answer to 3.",
+                    'system_prompt': "Output questions and answers in an unnumbered list. no yapping. Example:\n"
+                                     "Is this a question 1?\nThis is the answer 1.\n"
+                                     "Is this a question 2?\nThis is the answer to 2.\n"
+                                     "Is this a question 3?\nThis is the answer to 3.",
                     'output_format': "alternating list of questions and answers in an unnumbered list."
                 }
             }
@@ -67,8 +50,8 @@ class MainApp(ConfigEditor):
             content = self.config.get('General', 'Content', fallback='')
             user_prompt = f"List {content_length} unique {content} in the format of a {output_format}. No yapping."
 
-            self.log(f"userPrompt: {user_prompt}\n")
-            self.log(f"systemPrompt: {system_prompt}\n")
+            log_func(f"userPrompt: {user_prompt}\n")
+            log_func(f"systemPrompt: {system_prompt}\n")
 
             messages = [
                 {
@@ -86,53 +69,80 @@ class MainApp(ConfigEditor):
             ]
 
             modelName:str = 'llama3.1'
-            self.log(f"Sending chat to {modelName}...\n")
+            log_func(f"Sending chat to {modelName}...\n")
             response = chat('llama3.1', messages=messages)
-            self.log('Model Response:\r\n'+response['message']['content'] + '\n')
+            log_func('Model Response:\r\n'+response['message']['content'] + '\n')
 
-            # process the response by first clean any extra line feeds or other issues the model output has
-            # split the response string into a list based on the line feeds
             response_content = response['message']['content']
             response_content = response_content.replace(" \n\n", "") 
             response_content = response_content.replace(" \n", "")
             contentList = response_content.split("\n")
 
-            # get some params
-            contentTitle =              self.config.get('General', 'Content Title', fallback='Default Title')
-            itemsPerCard =              int(self.config.get('General', "Items Per Card",fallback = '1'))
-            contentFont =               self.config.get('Fonts', 'Title Font', fallback='Arial')
-            cardBackTitle =             self.config.get("Card Back", "Title", fallback='Back Title')
-            cardBackFont =              self.config.get("Card Back", "Font", fallback='Arial')
-            cardBackGenerate =          self.config.get("Card Back", "Generate", fallback='FALSE')
-            cardBackImageGenContent =   self.config.get("Card Back", "Gen Content", fallback='')
-            imagePath =                 self.config.get('Card Back', 'Image', fallback='')
+            contentTitle = self.config.get('General', 'Content Title', fallback='Default Title')
+            itemsPerCard = int(self.config.get('General', "Items Per Card", fallback='1'))
+            contentFont = self.config.get('Fonts', 'Title Font', fallback='Arial')
+            cardBackTitle = self.config.get("Card Back", "Title", fallback='Back Title')
+            cardBackFont = self.config.get("Card Back", "Font", fallback='Arial')
+            cardBackGenerate = self.config.get("Card Back", "Generate", fallback='FALSE')
+            cardBackImageGenContent = self.config.get("Card Back", "Gen Content", fallback='')
+            imagePath = self.config.get('Card Back', 'Image', fallback='')
 
-            # Note that with questions and answers, since llama3.1 sends them on different lines, we double the itemsPerCard.
-            # This causes the pdf generator logic to grab a question and then an answer for each card.
-            if (content_type == 'questionsandanswers'): itemsPerCard *= 2
+            if (content_type == 'questionsandanswers'): 
+                itemsPerCard *= 2
 
-            # generate the card image, or use the one specified?
             if cardBackGenerate.upper() == 'TRUE':
                 imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle)
 
-            # generate the cards
-            self.log(f"Generating Cards...\n")
-            generate_card_pdf.generate_card_pdf(content_type,contentList, contentTitle, contentFont, itemsPerCard) 
+            log_func(f"Generating Cards...\n")
+            generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard) 
             generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
-            self.log(f"Card generation completed!")
+            log_func(f"Card generation completed!")
 
-            #self.master.after(0, lambda: tk.messagebox.showinfo("Success", "Card generation completed!"))
+        except Exception as e:
+            log_func(f"An error occurred: {str(e)}\n")
+            raise
 
+class MainApp(ConfigEditor):
+    def __init__(self, master):
+        super().__init__(master)
+        
+    def run_callback(self):
+        if not self.current_file:
+            tk.messagebox.showerror("Error", "Please open or save a configuration file first.")
+            return
+             
+        self.save_file()
+        self.log("Saved config file and starting PDF generation.\n")
+
+        threading.Thread(target=self.run_card_generation, daemon=True).start()
+
+    def run_card_generation(self):
+        try:
+            generator = CardGenerator(self.config)
+            generator.run_card_generation(self.log)
         except Exception as e:
             self.log(f"An error occurred: {str(e)}\n")
             self.master.after(0, lambda: tk.messagebox.showerror("Error", f"An error occurred: {str(e)}"))
 
+def run_cli(config_path):
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    generator = CardGenerator(config)
+    generator.run_card_generation()
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    ico = Image.open('./gameicon-midjourney.png')
-    photo = ImageTk.PhotoImage(ico)
-    root.wm_iconphoto(False, photo)
-    app = MainApp(root)
-    sys.stdout = app.StdoutRedirector(app.log_queue)
-    sys.stderr = app.StdoutRedirector(app.log_queue)
-    root.mainloop()
+    parser = argparse.ArgumentParser(description="Card Generator")
+    parser.add_argument("--config", help="Path to configuration file")
+    args = parser.parse_args()
+
+    if args.config:
+        run_cli(args.config)
+    else:
+        root = tk.Tk()
+        ico = Image.open('./gameicon-midjourney.png')
+        photo = ImageTk.PhotoImage(ico)
+        root.wm_iconphoto(False, photo)
+        app = MainApp(root)
+        sys.stdout = app.StdoutRedirector(app.log_queue)
+        sys.stderr = app.StdoutRedirector(app.log_queue)
+        root.mainloop()

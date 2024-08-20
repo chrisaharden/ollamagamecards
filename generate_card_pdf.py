@@ -17,7 +17,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
         selected_items = available_items[:num]
         del available_items[:num]
         return selected_items
-    
+
     # Create instance of FPDF class
     pdf = FPDF('P', 'in', 'Letter')  # 'P' for portrait, 'in' for inches, 'Letter' for 8.5x11 in
 
@@ -130,6 +130,11 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
         add_page_with_sections(pdf, x_positions, y_positions, available_items)
         section_count += 1
 
-    # Save the PDF
-    pdf.output(title+".pdf")
-    print(f"{title}.pdf generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")
+    # Create the output directory if it doesn't exist
+    output_dir = os.path.join(os.getcwd(), "output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Save the PDF in the output directory
+    output_path = os.path.join(output_dir, f"{title}.pdf")
+    pdf.output(output_path)
+    print(f"{output_path} generated successfully! Total sections created: {section_count * len(x_positions) * len(y_positions)}")

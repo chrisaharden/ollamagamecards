@@ -90,6 +90,10 @@ class CardGenerator:
             if (content_type == 'questionsandanswers'): 
                 itemsPerCard *= 2
 
+            # Create the output directory if it doesn't exist
+            output_dir = os.path.join(os.getcwd(), "output")
+            os.makedirs(output_dir, exist_ok=True)
+
             if cardBackGenerate.upper() == 'TRUE':
                 imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle)
 

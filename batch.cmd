@@ -1,4 +1,4 @@
-python main_py.py --config pdfconfig-questions.ini
-python main_py.py --config pdfconfig-responses.ini
-python main_py.py --config pdfconfig-questionsandanswers.ini
+python main.py --config pdfconfig-questions.ini
+python main.py --config pdfconfig-responses.ini
+python main.py --config pdfconfig-questionsandanswers.ini
 

@@ -65,9 +65,16 @@ def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font=""
                 pdf.set_xy(x, text_y + (bar_height - text_height) / 2)  # Center text vertically in the bar
                 pdf.cell(square_size, text_height, title, 0, 0, 'C')
 
+    # Create the output directory if it doesn't exist
+    output_dir = os.path.join(os.getcwd(), "output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Update the output path to use the output directory
+    output_path = os.path.join(output_dir, output_path)
+
     # Save the PDF
     pdf.output(output_path)
-    print(f"{output_path}.pdf generated successfully!.")
+    print(f"{output_path} generated successfully!")
 
 # Example usage:
 # create_image_grid("dog.png", "dog_grid.pdf", font="Arial", title="My Dog")

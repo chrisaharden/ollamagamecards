@@ -56,9 +56,9 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
 
 
     def get_multi_cell_height(pdf, w, txt):
-        start_x, start_y = pdf.get_x(), pdf.get_y()
-        pdf.multi_cell(w, line_height, txt) #make a cell, but don't write anything
-        height = pdf.get_y() - start_y
+        start_x, start_y = pdf.get_x(), pdf.get_y() 
+        pdf.multi_cell(w, line_height, "") #make a cell with the width and line height, which will wrap.  Leave text blank, since we just want the height
+        height = pdf.get_y() - start_y 
         pdf.set_xy(start_x, start_y)
         return height
 

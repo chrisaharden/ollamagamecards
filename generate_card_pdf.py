@@ -81,7 +81,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                 pdf.set_xy(x + (section_width - title_width) / 2, y + 0.1)
                 pdf.cell(title_width, title_height, title, align='C', border='B')  # 'B' for bottom border (underline)
                 
-                # Generate unique random items
+                # Extract one or more items for the next card / section
                 extracted_items = extract_items(available_items, items_per_card) 
                 
                 # Set regular font for list
@@ -106,7 +106,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                         # extract_items() grabs two lines at once for questions and answers 
                         if index % 2 == 0: #even entries are questions
                             if "?" not in item:
-                                print("Question is missing a question mark, or array is off by one")
+                                print(f"index:{index},x:{x},y:{y}: Question is missing a question mark, or array is off by one")
 
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=12)

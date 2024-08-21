@@ -73,9 +73,13 @@ class CardGenerator:
             response = chat('llama3.1', messages=messages)
             log_func('Model Response:\r\n'+response['message']['content'] + '\n')
 
+            #clean/standardize the model output string and then convert to a list
             response_content = response['message']['content']
-            response_content = response_content.replace(" \n\n", "") 
-            response_content = response_content.replace(" \n", "")
+            response_content = response_content.replace(" \n\n", "\n") 
+            response_content = response_content.replace(" \n", "\n")
+            response_content = response_content.replace("\n\n", "\n") 
+            response_content = response_content.lstrip(' ')  # Remove leading space if present
+            response_content = response_content.lstrip('\n')  # Remove leading newline if present
             contentList = response_content.split("\n")
 
             contentTitle = self.config.get('General', 'Content Title', fallback='Default Title')

@@ -55,11 +55,13 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     available_items = all_items.copy()
 
 
-    def get_multi_cell_height(pdf, w, txt):
-        start_x, start_y = pdf.get_x(), pdf.get_y() 
-        pdf.multi_cell(w, line_height, "") #make a cell with the width and line height, which will wrap.  Leave text blank, since we just want the height
-        height = pdf.get_y() - start_y 
-        pdf.set_xy(start_x, start_y)
+    def get_multi_cell_height(pdf, cell_width, txt):
+        # Calculate the number of lines
+        text_width = pdf.get_string_width(txt)
+        number_of_lines = int(text_width / cell_width) + 1
+
+        # Calculate the total height of the multi-cell
+        height = number_of_lines * line_height
         return height
 
     # Function to add a new page and populate it with sections

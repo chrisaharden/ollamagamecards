@@ -12,7 +12,9 @@
             "console": "integratedTerminal",
             "args": [    
                 "--config",
-                "pdfconfig-questionsandanswers.ini"           
+                "pdfconfig-questionsandanswers.ini",
+                "--test",
+                "1"
             ]
         }
     ]

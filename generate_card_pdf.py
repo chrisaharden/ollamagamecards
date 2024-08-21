@@ -55,13 +55,13 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     available_items = all_items.copy()
 
 
-    def get_multi_cell_height(pdf, cell_width, txt):
+    def get_multi_cell_height(pdf, cell_width, passed_line_height, txt):
         # Calculate the number of lines
         text_width = pdf.get_string_width(txt)
         number_of_lines = int(text_width / cell_width) + 1
 
         # Calculate the total height of the multi-cell
-        height = number_of_lines * line_height
+        height = number_of_lines * passed_line_height
         return height
 
     # Function to add a new page and populate it with sections
@@ -114,10 +114,12 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                             pdf.set_font(font, size=12)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
                         else: #odd entries are answers.  move them down.
-                            answer_height = get_multi_cell_height(pdf,section_width,item)
+                            answer_font_size= 8
+                            answer_line_height = .12
+                            answer_height = get_multi_cell_height(pdf,section_width,answer_line_height,item)
                             answer_cursor_y=cursor_y+body_height-answer_height
                             pdf.set_xy(cursor_x,answer_cursor_y)
-                            pdf.set_font(font, size=8)
+                            pdf.set_font(font, size=answer_font_size)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C',border=1)
 
                     else: #assuming "words"

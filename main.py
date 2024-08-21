@@ -11,10 +11,16 @@ import tkinter as tk
 from ConfigEditor import ConfigEditor
 import threading
 from PIL import Image, ImageTk
+from qa_list import qa_list
+
+# Define constants
+TEST_SEND_LARGE_STRINGS_TO_PDF = 1
+
 
 class CardGenerator:
-    def __init__(self, config):
+    def __init__(self, config, testnumber=None):
         self.config = config
+        self.testnumber = testnumber
 
     def run_card_generation(self, log_func=print):
         try:
@@ -68,19 +74,23 @@ class CardGenerator:
                 }
             ]
 
-            modelName:str = 'llama3.1'
-            log_func(f"Sending chat to {modelName}...\n")
-            response = chat('llama3.1', messages=messages)
-            log_func('Model Response:\r\n'+response['message']['content'] + '\n')
+            # Basic testing framework - in this case to test our strings still visually look correct as things change.
+            if self.testnumber == TEST_SEND_LARGE_STRINGS_TO_PDF:
+                contentList = qa_list
+            else: #Normal code path
+                modelName:str = 'llama3.1'
+                log_func(f"Sending chat to {modelName}...\n")
+                response = chat('llama3.1', messages=messages)
+                log_func('Model Response:\r\n'+response['message']['content'] + '\n')
 
-            #clean/standardize the model output string and then convert to a list
-            response_content = response['message']['content']
-            response_content = response_content.replace(" \n\n", "\n") 
-            response_content = response_content.replace(" \n", "\n")
-            response_content = response_content.replace("\n\n", "\n") 
-            response_content = response_content.lstrip(' ')  # Remove leading space if present
-            response_content = response_content.lstrip('\n')  # Remove leading newline if present
-            contentList = response_content.split("\n")
+                #clean/standardize the model output string and then convert to a list
+                response_content = response['message']['content']
+                response_content = response_content.replace(" \n\n", "\n") 
+                response_content = response_content.replace(" \n", "\n")
+                response_content = response_content.replace("\n\n", "\n") 
+                response_content = response_content.lstrip(' ')  # Remove leading space if present
+                response_content = response_content.lstrip('\n')  # Remove leading newline if present
+                contentList = response_content.split("\n")
 
             contentTitle = self.config.get('General', 'Content Title', fallback='Default Title')
             itemsPerCard = int(self.config.get('General', "Items Per Card", fallback='1'))
@@ -132,19 +142,20 @@ class MainApp(ConfigEditor):
             self.log(f"An error occurred: {str(e)}\n")
             self.master.after(0, lambda: tk.messagebox.showerror("Error", f"An error occurred: {str(e)}"))
 
-def run_cli(config_path):
+def run_cli(config_path,testnumber):
     config = configparser.ConfigParser()
     config.read(config_path)
-    generator = CardGenerator(config)
+    generator = CardGenerator(config,testnumber)
     generator.run_card_generation()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Card Generator")
     parser.add_argument("--config", help="Path to configuration file")
+    parser.add_argument("--testnumber", type=int, help="Test number for specific behavior")
     args = parser.parse_args()
 
     if args.config:
-        run_cli(args.config)
+        run_cli(args.config, args.testnumber)
     else:
         root = tk.Tk()
         ico = Image.open('./gameicon-midjourney.png')

@@ -56,31 +56,20 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # Create a copy of all_items to work with
     available_items = all_items.copy()
 
-    """
-    def get_multi_cell_height(cell_width, passed_line_height, txt:str):
-        # Calculate the number of lines
-        text_width = pdf.get_string_width(s=txt)
-        number_of_lines = int(text_width / cell_width) + 1
-
-        # Calculate the total height of the multi-cell
-        height = number_of_lines * passed_line_height
-        print(f"height in: {height}, number of lines: {number_of_lines}")
-        return height
-    """
-
     # Function to add a new page and populate it with sections
     def add_page_with_sections(pdf, x_positions, y_positions, available_items):
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=page_bottom_margin)
 
-        card_number:int=0
+        #debug
+        #card_number:int=0
         for y in y_positions:
             for x in x_positions:
                 if not available_items:
                     return
                 
                 # Track the card number for debugging purposes
-                card_number+=1 
+                #card_number+=1 
 
                 # Draw rectangle for the section
                 pdf.rect(x, y, section_width, section_height)
@@ -107,7 +96,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                 for index, item in enumerate(extracted_items):
                     
                     #debug
-                    item = f"{card_number}: "+item
+                    #item = f"{card_number}: "+item
 
                     if content_type == 'questions':
                         # For questions, use multi_cell to allow text wrapping
@@ -118,13 +107,13 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                         # extract_items() grabs two lines at once for questions and answers 
                         if index % 2 == 0: #even entries are questions
                             if "?" not in item:
-                                print(f"index:{index},x:{x},y:{y}: Question is missing a question mark, or array is off by one")
+                                print(f"WARNING: index:{index},x:{x},y:{y}: Question is missing a question mark, or array is off by one.  Cards may have questions and answers swapped.")
 
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=11)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
                         else: #odd entries are answers.  move them down.
-                            print(f"{x},{y}: {item}")
+                            #print(f"{x},{y}: {item}")
                             answer_font_size= 8
                             answer_line_height = .12
                             
@@ -133,16 +122,16 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                             text_width = pdf.get_string_width(item)
                             number_of_lines = int(text_width / (section_width-cell_margin)) + 1
                             answer_height = number_of_lines * answer_line_height
-                            print(f"height in: {answer_height}, number of lines: {number_of_lines}")
+                            #print(f"height in: {answer_height}, number of lines: {number_of_lines}")
                             answer_cursor_y=cursor_y+body_height-answer_height
                             pdf.set_xy(cursor_x,answer_cursor_y)
                             pdf.set_font(font, size=answer_font_size)
 
                             # Print the answer 
                             ybefore = pdf.get_y()
-                            pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C',border=1)
+                            pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C',border=0)
                             yafter = pdf.get_y()
-                            print(f"height out: {yafter - ybefore}, number of lines: {number_of_lines}")
+                            #print(f"height out: {yafter - ybefore}, number of lines: {number_of_lines}")
 
                     else: #assuming "words"
                         # For single words, center them

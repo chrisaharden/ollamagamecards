@@ -46,6 +46,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     margin = 0.5
     body_height = section_height - title_height - margin
     line_height = 0.18
+    cell_margin = .2
 
     # Calculate positions
     x_positions = [margin + (section_width * i) for i in range(3)]
@@ -54,15 +55,17 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # Create a copy of all_items to work with
     available_items = all_items.copy()
 
-
-    def get_multi_cell_height(pdf, cell_width, passed_line_height, txt):
+    """
+    def get_multi_cell_height(cell_width, passed_line_height, txt:str):
         # Calculate the number of lines
-        text_width = pdf.get_string_width(txt)
+        text_width = pdf.get_string_width(s=txt)
         number_of_lines = int(text_width / cell_width) + 1
 
         # Calculate the total height of the multi-cell
         height = number_of_lines * passed_line_height
+        print(f"height in: {height}, number of lines: {number_of_lines}")
         return height
+    """
 
     # Function to add a new page and populate it with sections
     def add_page_with_sections(pdf, x_positions, y_positions, available_items):
@@ -114,13 +117,26 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                             pdf.set_font(font, size=12)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
                         else: #odd entries are answers.  move them down.
+                            print(f"{x},{y}: {item}")
                             answer_font_size= 8
                             answer_line_height = .12
-                            answer_height = get_multi_cell_height(pdf,section_width,answer_line_height,item)
+                            #answer_height = get_multi_cell_height(section_width-cell_margin,answer_line_height,item)
+                            
+                            # Calculate the number of lines, then calculate the total height of the multi-cell, 
+                            # so you can move the answer box location up that amount
+                            text_width = pdf.get_string_width(item)
+                            number_of_lines = int(text_width / (section_width-cell_margin)) + 1
+                            answer_height = number_of_lines * answer_line_height
+                            print(f"height in: {answer_height}, number of lines: {number_of_lines}")
                             answer_cursor_y=cursor_y+body_height-answer_height
                             pdf.set_xy(cursor_x,answer_cursor_y)
                             pdf.set_font(font, size=answer_font_size)
-                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C',border=1)
+
+                            # print the answer 
+                            ybefore = pdf.get_y()
+                            pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C',border=1)
+                            yafter = pdf.get_y()
+                            print(f"height out: {yafter - ybefore}, number of lines: {number_of_lines}")
 
                     else: #assuming "words"
                         # For single words, center them

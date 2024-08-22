@@ -14,7 +14,7 @@
                 "--config",
                 "pdfconfig-questionsandanswers.ini",
                 "--test",
-                "1"
+                "2"
             ]
         }
     ]

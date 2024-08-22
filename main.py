@@ -11,11 +11,11 @@ import tkinter as tk
 from ConfigEditor import ConfigEditor
 import threading
 from PIL import Image, ImageTk
-from qa_list import qa_list
+from qa_list import qa_list1, qa_list2
 
 # Define constants
-TEST_SEND_LARGE_STRINGS_TO_PDF = 1
-
+TEST_SEND_LIST1_TO_PDF = 1
+TEST_SEND_LIST2_TO_PDF = 2
 
 class CardGenerator:
     def __init__(self, config, testnumber=None):
@@ -75,8 +75,10 @@ class CardGenerator:
             ]
 
             # Basic testing framework - in this case to test our strings still visually look correct as things change.
-            if self.testnumber == TEST_SEND_LARGE_STRINGS_TO_PDF:
-                contentList = qa_list
+            if self.testnumber == TEST_SEND_LIST1_TO_PDF:
+                contentList = qa_list1
+            elif self.testnumber == TEST_SEND_LIST2_TO_PDF:
+                contentList = qa_list2
             else: #Normal code path
                 modelName:str = 'llama3.1'
                 log_func(f"Sending chat to {modelName}...\n")

@@ -47,6 +47,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     body_height = section_height - title_height - margin
     line_height = 0.18
     cell_margin = .2
+    page_bottom_margin = 0 # quarter of an inch in mm
 
     # Calculate positions
     x_positions = [margin + (section_width * i) for i in range(3)]
@@ -70,11 +71,17 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # Function to add a new page and populate it with sections
     def add_page_with_sections(pdf, x_positions, y_positions, available_items):
         pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=page_bottom_margin)
+
+        card_number:int=0
         for y in y_positions:
             for x in x_positions:
                 if not available_items:
                     return
                 
+                # Track the card number for debugging purposes
+                card_number+=1 
+
                 # Draw rectangle for the section
                 pdf.rect(x, y, section_width, section_height)
                 
@@ -100,7 +107,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                 for index, item in enumerate(extracted_items):
                     
                     #debug
-                    #item = f"{x},{y}:"+item
+                    item = f"{card_number}: "+item
 
                     if content_type == 'questions':
                         # For questions, use multi_cell to allow text wrapping
@@ -114,16 +121,15 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                                 print(f"index:{index},x:{x},y:{y}: Question is missing a question mark, or array is off by one")
 
                             pdf.set_xy(cursor_x, cursor_y)
-                            pdf.set_font(font, size=12)
+                            pdf.set_font(font, size=11)
                             pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
                         else: #odd entries are answers.  move them down.
                             print(f"{x},{y}: {item}")
                             answer_font_size= 8
                             answer_line_height = .12
-                            #answer_height = get_multi_cell_height(section_width-cell_margin,answer_line_height,item)
                             
                             # Calculate the number of lines, then calculate the total height of the multi-cell, 
-                            # so you can move the answer box location up that amount
+                            # so you can move the answer box location up that amount.
                             text_width = pdf.get_string_width(item)
                             number_of_lines = int(text_width / (section_width-cell_margin)) + 1
                             answer_height = number_of_lines * answer_line_height
@@ -132,7 +138,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                             pdf.set_xy(cursor_x,answer_cursor_y)
                             pdf.set_font(font, size=answer_font_size)
 
-                            # print the answer 
+                            # Print the answer 
                             ybefore = pdf.get_y()
                             pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C',border=1)
                             yafter = pdf.get_y()

@@ -33,6 +33,7 @@ class ConfigEditor:
         filemenu.add_command(label="New", command=self.new_file)
         filemenu.add_command(label="Open", command=self.open_file)
         filemenu.add_command(label="Save", command=self.save_file)
+        filemenu.add_command(label="Save As", command=self.save_as_file) 
         menubar.add_cascade(label="File", menu=filemenu)
         self.master.config(menu=menubar)
 
@@ -150,11 +151,17 @@ class ConfigEditor:
 
     def save_file(self):
         if not self.current_file:
-            self.current_file = filedialog.asksaveasfilename(defaultextension=".ini", filetypes=[("INI files", "*.ini")])
+            return self.save_as_file()
         
-        if not self.current_file:
-            return
+        self._save_to_file(self.current_file)
 
+    def save_as_file(self):
+        file_path = filedialog.asksaveasfilename(defaultextension=".ini", filetypes=[("INI files", "*.ini")])
+        if file_path:
+            self.current_file = file_path
+            self._save_to_file(file_path)
+
+    def _save_to_file(self, file_path):
         # Update config with new values
         for (section, key), entry in self.entries.items():
             self.config[section][key] = entry.get()
@@ -164,8 +171,9 @@ class ConfigEditor:
             self.config[section][key] = dropdown.get()
 
         # Save to file
-        with open(self.current_file, 'w') as configfile:
+        with open(file_path, 'w') as configfile:
             self.config.write(configfile)
+        self.log(f"Configuration saved to {file_path}. \n")
 
     def refresh_display(self):
         # Clear existing entries
@@ -221,11 +229,3 @@ class ConfigEditor:
                     entry.insert(0, value)
                     entry.pack(side="left", expand=True, fill="x")
                     self.entries[(section, key)] = entry
-
-#if __name__ == "__main__":
-    #root = tk.Tk()
-    #ico = Image.open('./gameicon-midjourney.png')
-    #photo = ImageTk.PhotoImage(ico)
-    #root.wm_iconphoto(False, photo)
-    #app = ConfigEditor(root)
-    #root.mainloop()

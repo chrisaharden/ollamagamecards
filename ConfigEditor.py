@@ -126,6 +126,45 @@ class ConfigEditor:
         self.entries.clear()
         self.dropdowns.clear()
 
+        # Ask for a new file name
+        file_name = simpledialog.askstring("New File", "Enter a name for the new file:")
+        if not file_name:
+            return
+
+        # Add sections and their default values
+        self.config['General'] = {
+            'content length': '12',
+            'content type': 'QuestionsAndAnswers',
+            'content': file_name+" Trivia",
+            'content title': file_name+" Trivia",
+            'items per card': '1'
+        }
+
+        self.config['Fonts'] = {
+            'title font': 'Arial',
+            'title font size': '24',
+            'body font': 'Arial',
+            'body font size': '12'
+        }
+
+        self.config['Card Back'] = {
+            'title': file_name+" Trivia",
+            'font': 'Arial',
+            'generate': 'FALSE',
+            'gen content': file_name+" Imagery",
+            'image': './images/DefaultCardBack.png'
+        }
+
+        # Refresh the display with the new config
+        self.refresh_display()
+
+        # Set the current file name
+        self.current_file = f"{file_name}.ini"
+
+        # Save the new file
+        self.save_file()
+
+    def add_new_section(self):
         # Ask for a new section name
         section_name = simpledialog.askstring("New Section", "Enter a name for the new section:")
         if section_name:

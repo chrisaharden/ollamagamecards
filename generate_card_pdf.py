@@ -40,18 +40,29 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # pdf.add_font('InkfreeBold', '', 'fonts/Inkfree.ttf')  # Same as before, no style parameter
 
     # Dimensions
+    # Page Info
+    horizontal_sections = 3
+    vertical_sections = 4
     section_width = 2.5
     section_height = 2.5
+    page_margin = 0.5
+    page_bottom_margin = 0 #used by fpdf to know when to add a new page
+
+    # Title Info
+    title_font_size = 18
     title_height = .2
-    margin = 0.5
-    body_height = section_height - title_height - margin
+
+    # Body Info
+    body_height = section_height - title_height - page_margin
+    body_font_size = 16
     line_height = 0.18
+    answer_font_size= 8
+    answer_line_height = .12
     cell_margin = .2
-    page_bottom_margin = 0 # quarter of an inch in mm
 
     # Calculate positions
-    x_positions = [margin + (section_width * i) for i in range(3)]
-    y_positions = [margin + (section_height * j) for j in range(4)]
+    x_positions = [page_margin + (section_width * i) for i in range(horizontal_sections)]
+    y_positions = [page_margin + (section_height * j) for j in range(vertical_sections)]
 
     # Create a copy of all_items to work with
     available_items = all_items.copy()
@@ -75,7 +86,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                 pdf.rect(x, y, section_width, section_height)
                 
                 # Set bold font for title
-                pdf.set_font(font, size=18)
+                pdf.set_font(font, size=title_font_size)
                 
                 # Add title (centered within the section and underlined)
                 title_width = pdf.get_string_width(title)
@@ -86,7 +97,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                 extracted_items = extract_items(available_items, items_per_card) 
                 
                 # Set regular font for list
-                pdf.set_font(font, size=12 if content_type == 'Questions' else 16)
+                pdf.set_font(font, size=body_font_size)
                 
                 # Set initial cursor position for items
                 cursor_x = x + 0.1
@@ -101,7 +112,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                     if content_type == 'questions':
                         # For questions, use multi_cell to allow text wrapping
                         pdf.set_xy(cursor_x, cursor_y)
-                        pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
+                        pdf.multi_cell(section_width - cell_margin, line_height, item, align='C')
                         
                     elif content_type == 'questionsandanswers':
                         # extract_items() grabs two lines at once for questions and answers 
@@ -111,11 +122,9 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
 
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=11)
-                            pdf.multi_cell(section_width - 0.2, line_height, item, align='C')
+                            pdf.multi_cell(section_width - cell_margin, line_height, item, align='C')
                         else: #odd entries are answers.  move them down.
                             #print(f"{x},{y}: {item}")
-                            answer_font_size= 8
-                            answer_line_height = .12
                             
                             # Calculate the number of lines, then calculate the total height of the multi-cell, 
                             # so you can move the answer box location up that amount.
@@ -135,7 +144,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
 
                     else: #assuming "words"
                         # For single words, center them
-                        pdf.set_xy(cursor_x + (section_width - 0.2) / 2 - pdf.get_string_width(item) / 2, cursor_y)
+                        pdf.set_xy(cursor_x + (section_width - cell_margin) / 2 - pdf.get_string_width(item) / 2, cursor_y)
                         pdf.cell(0, line_height, item)
                         cursor_y += line_height  # Move cursor down
 

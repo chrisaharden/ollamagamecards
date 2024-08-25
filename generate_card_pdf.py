@@ -2,9 +2,33 @@ import random
 from fpdf import FPDF
 import font_helper
 import os
+import json
 
+def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, items_per_card:int=1, pdftemplate:str=''):
+    # Read dimensions from the template file
+    with open(pdftemplate, 'r') as f:
+        template = json.load(f)
 
-def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, items_per_card:int=1):
+    # Page Info
+    horizontal_sections = template['page_info']['horizontal_sections']
+    vertical_sections = template['page_info']['vertical_sections']
+    section_width = template['page_info']['section_width']
+    section_height = template['page_info']['section_height']
+    page_margin = template['page_info']['page_margin']
+    page_bottom_margin = template['page_info']['page_bottom_margin']
+
+    # Title Info
+    title_font_size = template['title_info']['font_size']
+    title_height = template['title_info']['height']
+
+    # Body Info
+    #body_height = template['body_info']['height']
+    body_font_size = template['body_info']['font_size']
+    line_height = template['body_info']['line_height']
+    answer_font_size = template['body_info']['answer_font_size']
+    answer_line_height = template['body_info']['answer_line_height']
+    cell_margin = template['body_info']['cell_margin']
+    body_height = section_height - title_height - cell_margin #calculate the body height
 
     #we are using all_items as the name.  TODO: later change to just using contentList
     all_items = contentList
@@ -38,27 +62,6 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     # TODO: add the ability to add_font from fonts directory
     # pdf.add_font('Inkfree', '', 'fonts/Inkfree.ttf')
     # pdf.add_font('InkfreeBold', '', 'fonts/Inkfree.ttf')  # Same as before, no style parameter
-
-    # Dimensions
-    # Page Info
-    horizontal_sections = 3
-    vertical_sections = 4
-    section_width = 2.5
-    section_height = 2.5
-    page_margin = 0.5
-    page_bottom_margin = 0 #used by fpdf to know when to add a new page
-
-    # Title Info
-    title_font_size = 18
-    title_height = .2
-
-    # Body Info
-    body_height = section_height - title_height - page_margin
-    body_font_size = 16
-    line_height = 0.18
-    answer_font_size= 8
-    answer_line_height = .12
-    cell_margin = .2
 
     # Calculate positions
     x_positions = [page_margin + (section_width * i) for i in range(horizontal_sections)]
@@ -132,7 +135,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                             number_of_lines = int(text_width / (section_width-cell_margin)) + 1
                             answer_height = number_of_lines * answer_line_height
                             #print(f"height in: {answer_height}, number of lines: {number_of_lines}")
-                            answer_cursor_y=cursor_y+body_height-answer_height
+                            answer_cursor_y=cursor_y+body_height-answer_height-cell_margin
                             pdf.set_xy(cursor_x,answer_cursor_y)
                             pdf.set_font(font, size=answer_font_size)
 

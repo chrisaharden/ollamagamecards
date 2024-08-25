@@ -114,7 +114,7 @@ class CardGenerator:
                 imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle)
 
             log_func(f"Generating Cards...\n")
-            generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard) 
+            generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard,"./pdf_templates/pdf-template-2.5x2.5.json") 
             generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
             log_func(f"Card generation completed!")
 

@@ -16,6 +16,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
     section_height = template['page_info']['section_height']
     page_margin = template['page_info']['page_margin']
     page_bottom_margin = template['page_info']['page_bottom_margin']
+    orientation = template['page_info'].get('orientation', 'portrait')
 
     # Title Info
     title_font_size = template['title_info']['font_size']
@@ -43,7 +44,7 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
         return selected_items
 
     # Create instance of FPDF class
-    pdf = FPDF('P', 'in', 'Letter')  # 'P' for portrait, 'in' for inches, 'Letter' for 8.5x11 in
+    pdf = FPDF('L' if orientation == 'landscape' else 'P', 'in', 'Letter') # 'P' for portrait, 'in' for inches, 'Letter' for 8.5x11 in
 
     # Ensure the font is valid.  Default to Arial, if not.
     # Set regular font for list

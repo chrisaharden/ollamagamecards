@@ -2,15 +2,15 @@
   "page_info": {
     "orientation": "portrait",
     "horizontal_sections": 3,
-    "vertical_sections": 4,
+    "vertical_sections": 2,
     "section_width": 2.5,
-    "section_height": 2.5,
+    "section_height": 3.5,
     "page_margin": 0.5,
     "page_bottom_margin": 0
   },
   "title_info": {
     "font_size": 18,
-    "height": 0.2
+    "height": 0.3
   },
   "body_info": {
     "font_size": 16,

@@ -106,6 +106,9 @@ class CardGenerator:
             if (content_type == 'questionsandanswers'): 
                 itemsPerCard *= 2
 
+            # Get the layout file path from the config
+            layout_file = self.config.get('PDF Layout', 'Layout File', fallback='./pdf_layouts/pdf-layout-2.5x2.5cards.json')
+
             # Create the output directory if it doesn't exist
             output_dir = os.path.join(os.getcwd(), "output")
             os.makedirs(output_dir, exist_ok=True)
@@ -114,7 +117,7 @@ class CardGenerator:
                 imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle)
 
             log_func(f"Generating Cards...\n")
-            generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard,"./pdf_layouts/pdf-layout-2.5x2.5.json") 
+            generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard, layout_file) 
             generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
             log_func(f"Card generation completed!")
 

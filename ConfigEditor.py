@@ -155,6 +155,13 @@ class ConfigEditor:
             'image': './images/DefaultCardBack.png'
         }
 
+        # Add a new section for PDF Layout in the config
+        if 'PDF Layout' not in self.config:
+            self.config['PDF Layout'] = {
+                'layout file': './pdf_layouts/pdf-layout-2.5x2.5cards.json'
+            }
+
+
         # Refresh the display with the new config
         self.refresh_display()
 
@@ -248,19 +255,30 @@ class ConfigEditor:
             self.create_add_button(section_frame, section)
 
             for key, value in self.config[section].items():
-                key = key.title()
+                key_title = key.title()
                 frame = tk.Frame(self.scrollable_frame, bg=BACKGROUND_COLOR)
                 frame.pack(fill="x", padx=5, pady=2)
-                tk.Label(frame, text=key, width=20, anchor="w", 
+                tk.Label(frame, text=key_title, width=20, anchor="w", 
                         bg=BACKGROUND_COLOR, fg=TEXT_COLOR).pack(side="left")
                 
-                if section == 'General' and key == 'Content Type':
+                if section == 'General' and key_title == 'Content Type':
                     # Create a dropdown for Content Type
                     dropdown = ttk.Combobox(frame, values=["Words", "Questions", "QuestionsAndAnswers"],
                                             width=88, state="readonly")
                     dropdown.set(value)  # Set the current value
                     dropdown.pack(side="left", expand=True, fill="x")
                     self.dropdowns[(section, key)] = dropdown
+                elif section == 'PDF Layout' and key_title == 'Layout File':
+                    # Create an entry with a browse button for the layout file
+                    entry = tk.Entry(frame, width=80, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
+                                    insertbackground=TEXT_COLOR)
+                    entry.insert(0, value)
+                    entry.pack(side="left", expand=True, fill="x")
+                    self.entries[(section, key)] = entry
+                    
+                    browse_button = tk.Button(frame, text="Browse", command=lambda e=entry: self.browse_layout_file(e),
+                                              bg=BUTTON_BG, fg=BUTTON_FG)
+                    browse_button.pack(side="right")
                 else:
                     # Create a regular entry for other fields
                     entry = tk.Entry(frame, width=90, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
@@ -268,3 +286,8 @@ class ConfigEditor:
                     entry.insert(0, value)
                     entry.pack(side="left", expand=True, fill="x")
                     self.entries[(section, key)] = entry
+    def browse_layout_file(self, entry):
+        filename = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+        if filename:
+            entry.delete(0, tk.END)
+            entry.insert(0, filename)

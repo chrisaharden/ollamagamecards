@@ -118,7 +118,7 @@ class CardGenerator:
 
             log_func(f"Generating Cards...\n")
             generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard, layout_file) 
-            generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont)
+            generate_cardbacks_pdf.create_image_grid(imagePath, contentTitle+"-Backs.pdf", cardBackTitle, cardBackFont, layout_file)
             log_func(f"Card generation completed!")
 
         except Exception as e:

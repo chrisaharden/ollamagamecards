@@ -19,7 +19,12 @@ class ConfigEditor:
     def __init__(self, master):
         self.master = master
         self.master.title("AI Game Card Generator")
-        self.master.geometry("800x600")  
+         
+        # Make the application open in full screen
+        self.master.attributes('-fullscreen', True)
+        
+        # Bind the Escape key to exit full screen mode
+        self.master.bind('<Escape>', self.exit_fullscreen)    
 
         self.config = configparser.ConfigParser()
         self.current_file = None
@@ -34,6 +39,9 @@ class ConfigEditor:
         filemenu.add_command(label="Open", command=self.open_file)
         filemenu.add_command(label="Save", command=self.save_file)
         filemenu.add_command(label="Save As", command=self.save_as_file) 
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit Fullscreen", command=self.exit_fullscreen)
+        filemenu.add_command(label="Quit", command=self.quit_application)
         menubar.add_cascade(label="File", menu=filemenu)
         self.master.config(menu=menubar)
 
@@ -85,9 +93,13 @@ class ConfigEditor:
         self.run_button.bind("<Enter>", lambda e: self.run_button.config(bg=BUTTON_HOVER_BG))
         self.run_button.bind("<Leave>", lambda e: self.run_button.config(bg=BUTTON_BG))
 
+        # Create a frame for the log text box
+        log_frame = tk.Frame(self.master, bg=BACKGROUND_COLOR)
+        log_frame.pack(side="bottom", fill="x", padx=0, pady=0)
+
         # Create log text box with dark theme
-        self.log_text = scrolledtext.ScrolledText(self.master, height=5, bg=DARKER_BACKGROUND, fg=TEXT_COLOR)
-        self.log_text.pack(fill="both", expand=True, padx=0, pady=0)
+        self.log_text = scrolledtext.ScrolledText(log_frame, height=10, bg=DARKER_BACKGROUND, fg=TEXT_COLOR)
+        self.log_text.pack(fill="both", expand=True)
 
         self.log_queue = queue.Queue()
         self.master.after(100, self.check_log_queue)
@@ -105,6 +117,15 @@ class ConfigEditor:
 
         def flush(self):
             pass
+
+    def exit_fullscreen(self, event=None):
+        self.master.attributes('-fullscreen', False)
+        # You might want to set a specific size when exiting fullscreen
+        self.master.geometry('800x800')
+
+    def quit_application(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit the application?"):
+            self.master.quit()        
 
     def log(self, message):
         self.log_queue.put(message)

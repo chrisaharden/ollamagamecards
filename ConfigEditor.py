@@ -35,15 +35,22 @@ class ConfigEditor:
         # Create menu
         menubar = tk.Menu(self.master)
         filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="New", command=self.new_file)
-        filemenu.add_command(label="Open", command=self.open_file)
-        filemenu.add_command(label="Save", command=self.save_file)
-        filemenu.add_command(label="Save As", command=self.save_as_file) 
+        filemenu.add_command(label="New", command=self.new_file, accelerator="Ctrl+N")
+        filemenu.add_command(label="Open", command=self.open_file, accelerator="Ctrl+O")
+        filemenu.add_command(label="Save", command=self.save_file, accelerator="Ctrl+S")
+        filemenu.add_command(label="Save As", command=self.save_as_file, accelerator="Ctrl+Shift+S")
         filemenu.add_separator()
-        filemenu.add_command(label="Exit Fullscreen", command=self.exit_fullscreen)
-        filemenu.add_command(label="Quit", command=self.quit_application)
+        filemenu.add_command(label="Exit Fullscreen", command=self.exit_fullscreen, accelerator="Esc")
+        filemenu.add_command(label="Quit", command=self.quit_application, accelerator="Ctrl+Q")
         menubar.add_cascade(label="File", menu=filemenu)
         self.master.config(menu=menubar)
+
+        # Bind hotkeys
+        self.master.bind('<Control-n>', lambda event: self.new_file())
+        self.master.bind('<Control-o>', lambda event: self.open_file())
+        self.master.bind('<Control-s>', lambda event: self.save_file())
+        self.master.bind('<Control-S>', lambda event: self.save_as_file())
+        self.master.bind('<Control-q>', lambda event: self.quit_application())
 
         # Create main frame with matching background
         main_frame = tk.Frame(self.master, bg=BACKGROUND_COLOR)
@@ -123,7 +130,7 @@ class ConfigEditor:
         # You might want to set a specific size when exiting fullscreen
         self.master.geometry('800x800')
 
-    def quit_application(self):
+    def quit_application(self, event=None):
         if messagebox.askokcancel("Quit", "Do you want to quit the application?"):
             self.master.quit()        
 
@@ -137,7 +144,7 @@ class ConfigEditor:
             self.log_text.see(tk.END)
         self.master.after(100, self.check_log_queue)
     
-    def new_file(self):
+    def new_file(self, event=None):
         self.current_file = None
         self.config = configparser.ConfigParser()
         
@@ -207,7 +214,7 @@ class ConfigEditor:
                 self.config[section][key] = value
                 self.refresh_display()
 
-    def open_file(self):
+    def open_file(self, event=None):
         filepath = filedialog.askopenfilename(filetypes=[("INI files", "*.ini")])
         if not filepath:
             return
@@ -216,13 +223,13 @@ class ConfigEditor:
         self.config.read(filepath)
         self.refresh_display()
 
-    def save_file(self):
+    def save_file(self, event=None):
         if not self.current_file:
             return self.save_as_file()
         
         self._save_to_file(self.current_file)
 
-    def save_as_file(self):
+    def save_as_file(self, event=None):
         file_path = filedialog.asksaveasfilename(defaultextension=".ini", filetypes=[("INI files", "*.ini")])
         if file_path:
             self.current_file = file_path

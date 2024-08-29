@@ -1,0 +1,51 @@
+graph TD
+    A[main.py] --> B[ConfigEditor.py]
+    A --> C[generate_card_pdf.py]
+    A --> D[generate_cardbacks_pdf.py]
+    A --> E[generate_image_withSD.py]
+    A --> F[qa_list.py]
+    
+    B --> G[tkinter]
+    B --> H[configparser]
+    
+    C --> I[fpdf]
+    C --> J[font_helper.py]
+    
+    D --> I
+    D --> J
+    
+    E --> K[websocket]
+    
+    J --> L[fontTools]
+    
+    A --> M[ollama]
+    
+    subgraph "Main Application"
+        A
+    end
+    
+    subgraph "GUI and Config"
+        B
+        G
+        H
+    end
+    
+    subgraph "PDF Generation"
+        C
+        D
+        I
+        J
+    end
+    
+    subgraph "Image Generation"
+        E
+        K
+    end
+    
+    subgraph "Test Data"
+        F
+    end
+    
+    subgraph "AI Integration"
+        M
+    end

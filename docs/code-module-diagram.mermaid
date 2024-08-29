@@ -20,6 +20,11 @@ graph TD
     
     A --> M[ollama]
     
+    K --> N[ComfyUI]
+    N --> O[Stable Diffusion XL]
+    
+    M --> P[llama3.1 7B]
+    
     subgraph "Main Application"
         A
     end
@@ -40,6 +45,8 @@ graph TD
     subgraph "Image Generation"
         E
         K
+        N
+        O
     end
     
     subgraph "Test Data"
@@ -48,4 +55,8 @@ graph TD
     
     subgraph "AI Integration"
         M
+        P
     end
+
+    classDef externalSystem fill:#f9f,stroke:#333,stroke-width:4px;
+    class O,P externalSystem;

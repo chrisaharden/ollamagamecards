@@ -1,7 +1,7 @@
-python main.py --config pdfconfig-questions.ini
-python main.py --config pdfconfig-responses.ini
-python main.py --config pdfconfig-questionsandanswers.ini
-python main.py --config pdfconfig-FlintstonesTrivia.ini
-python main.py --config pdfconfig-StarWarsTrivia.ini
-python main.py --config pdfconfig-MarvelTrivia.ini
+REM python ./source/main.py --config ./source/card_designs/QuestionsOnly.ini
+REM python ./source/main.py --config ./source/card_designs/ResponsesOnly.ini
+REM python ./source/main.py --config ./source/card_designs/QuestionsandAnswers.ini
+REM python ./source/main.py --config ./source/card_designs/TheFlintstonesTrivia.ini
+python ./source/main.py --config ./source/card_designs/StarWarsTrivia.ini
+python ./source/main.py --config ./source/card_designs/MarvelTrivia.ini
 

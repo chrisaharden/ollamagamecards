@@ -170,7 +170,7 @@ def gen_image(subject:str, imageFileTitle:str):
             from PIL import Image
             import io
             image = Image.open(io.BytesIO(image_data))
-            filename = f".\\images\\generatedimage_{imageFileTitle}_{node_id}_{i}.png"
+            filename = f".\\source\\images\\generatedimage_{imageFileTitle}_{node_id}_{i}.png"
             image.save(filename)
             print(f"Saved {filename}")
     return filename

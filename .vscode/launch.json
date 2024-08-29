@@ -11,10 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [    
-                "--config",
-                "./card_designs/QuestionsandAnswers.ini",
-                "--test",
-                "2"
+                "--config", "./source/card_designs/QuestionsOnly.ini"
             ]
         }
     ]

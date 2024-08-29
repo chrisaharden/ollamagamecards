@@ -82,7 +82,7 @@ class ConfigEditor:
         button_frame.pack(side="bottom", fill="x", pady=10)
 
         # Load and resize the Run button image
-        image = Image.open("GeneratePDFButtonArt-midjourney.png")
+        image = Image.open("./source/GeneratePDFButtonArt-midjourney.png")
         image = image.resize((150, 150))  # Adjust the size as needed
         photo = ImageTk.PhotoImage(image)
 
@@ -180,13 +180,13 @@ class ConfigEditor:
             'font': 'Arial',
             'generate': 'FALSE',
             'gen content': file_name+" Imagery",
-            'image': './images/DefaultCardBack.png'
+            'image': './source/images/DefaultCardBack.png'
         }
 
         # Add a new section for PDF Layout in the config
         if 'PDF Layout' not in self.config:
             self.config['PDF Layout'] = {
-                'layout file': './pdf_layouts/pdf-layout-2.5x2.5cards.json'
+                'layout file': './source/pdf_layouts/pdf-layout-2.5x2.5cards.json'
             }
 
 

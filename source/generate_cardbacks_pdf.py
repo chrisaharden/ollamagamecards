@@ -4,7 +4,7 @@ import os
 import json
 import font_helper  # Assuming this module exists with the find_font_path function
 
-def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font="", layout_file="./pdf_layouts/pdf-layout-2.5x2.5cards.json"):
+def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font="", layout_file="./source/pdf_layouts/pdf-layout-2.5x2.5cards.json"):
     # Load layout information from JSON file
     with open(layout_file, 'r') as f:
         layout = json.load(f)
@@ -84,4 +84,4 @@ def create_image_grid(image_path, output_path="cardbacks.pdf", title="", font=""
     print(f"{output_path} generated successfully!")
 
 # Example usage:
-# create_image_grid("dog.png", "dog_grid.pdf", font="Arial", title="My Dog", layout_file="./pdf_layouts/pdf-layout-2.5x2.5cards.json")
+# create_image_grid("./source/dog.png", "dog_grid.pdf", font="Arial", title="My Dog", layout_file="./source/pdf_layouts/pdf-layout-2.5x2.5cards.json")

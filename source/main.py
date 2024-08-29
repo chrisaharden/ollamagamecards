@@ -107,7 +107,7 @@ class CardGenerator:
                 itemsPerCard *= 2
 
             # Get the layout file path from the config
-            layout_file = self.config.get('PDF Layout', 'Layout File', fallback='./pdf_layouts/pdf-layout-2.5x2.5cards.json')
+            layout_file = self.config.get('PDF Layout', 'Layout File', fallback='./source/pdf_layouts/pdf-layout-2.5x2.5cards.json')
 
             # Create the output directory if it doesn't exist
             output_dir = os.path.join(os.getcwd(), "output")
@@ -163,7 +163,7 @@ if __name__ == "__main__":
         run_cli(args.config, args.testnumber)
     else:
         root = tk.Tk()
-        ico = Image.open('./gameicon-midjourney.png')
+        ico = Image.open('./source/gameicon-midjourney.png')
         photo = ImageTk.PhotoImage(ico)
         root.wm_iconphoto(False, photo)
         app = MainApp(root)

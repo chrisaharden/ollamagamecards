@@ -1,3 +1,5 @@
+![AI Game Card Generator](./docs/CardFaces.png)(./docs/CardBacks.png)
+
 # AI Game Card Generator
 
 This project is an AI-powered tool for generating game cards with customizable content and layouts run on your local PC.
@@ -55,8 +57,11 @@ After install, the simplest way to see what this app can do is to run runGUI.cmd
 ### Via GUI
 
 1. Navigate to the project root directory.
-2. Run the following command:
+2. Run the GUI by:
    ```
+   Double-click the `batch.cmd` file  
+   
+   or you can directly run the GUI from a command line:
    python ./source/main.py
    ```
 3. The GUI will open. Use the interface to:
@@ -130,7 +135,21 @@ Generated PDFs will be saved in the `output/` directory.
 
 If you encounter any issues:
 1. Ensure all dependencies are correctly installed
-2. Check that file paths in your INI files are correct
+2. Check that file paths in your card designs (INI), layouts (JSON), and image files are correct
 3. Verify that the required directories exist and have the necessary permissions
+4. Below is the folder structure for your reference: 
+   project_root/
+   │
+   ├── source/
+   │   ├── *.py
+   │
+   ├── images/
+   │   └── *.png
+   │
+   ├── pdf_layouts/
+   │   └── pdf-layout-*.json
+   │
+   ├── pdf_layouts/
+   │   └── pdf-layout-*.json
 
 For further assistance, please open an issue on the project's GitHub page.

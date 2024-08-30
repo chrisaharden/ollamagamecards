@@ -1,4 +1,4 @@
-![AI Game Card Generator](./docs/CardFaces.png)(./docs/CardBacks.png)
+![AI Game Card Generator](./docs/ollamagamecards-splashart.png)
 
 # AI Game Card Generator
 
@@ -9,6 +9,11 @@ The cards can be 2.5x2.5 inch cards or 2.5x3.5 inch cards (poker sized), based o
 
 After install, the simplest way to see what this app can do is to run runGUI.cmd,  open an example card design from the card_designs folder, and press the large run button on the right side.  The bottom text box is a log of the application's activities, so you can see status.  When the app declares it is done generating the PDFs (front and back), you can find them in the output folder.
 
+License: see eula-apache-license.txt in this directory
+
+# Hardware Recommendations
+
+You'll need a PC or laptop with a graphics GPU such as those from nVidia in order to run the LLM and diffusion AI models in a timely fashion.
 
 ## Project Setup
 

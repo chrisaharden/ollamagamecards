@@ -1,0 +1,23 @@
+### Simple Trivia Card Game Rules
+
+**Objective:**  
+Be the first player or team to reach 10 points by correctly answering trivia questions.
+
+**Setup:**
+1. Shuffle the deck of trivia question cards.
+2. Decide the order of play. Players can roll a die or draw cards to determine who goes first.
+
+**Gameplay:**
+1. The first player (or team) is read a question from the top card by the player to their left.
+2. The player has 30 seconds to answer the question.
+   - If the answer is correct, they earn 1 point and keep the card.
+   - If the answer is incorrect, the card is placed at the bottom of the deck.
+3. Play passes to the next player (or team) in a clockwise direction.
+
+**Stealing Rule (Optional):**
+- If a player answers incorrectly, the next player in line can attempt to "steal" the question.
+- If the stealing player answers correctly, they earn 1 point.
+
+**Winning the Game:**
+- The first player (or team) to reach 10 points wins the game.
+- In the event of a tie, the tied players (or teams) can have a sudden death round, where the first correct answer wins.

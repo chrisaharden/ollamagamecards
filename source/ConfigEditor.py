@@ -227,7 +227,18 @@ class ConfigEditor:
         if not self.current_file:
             return self.save_as_file()
         
-        self._save_to_file(self.current_file)
+        # Check if the file is already in the card_designs directory
+        card_designs_dir = "./source/card_designs/"
+        if os.path.dirname(self.current_file) == os.path.abspath(card_designs_dir):
+            # The file is already in the correct directory, save it directly
+            self._save_to_file(self.current_file)
+        else:
+            # The file is not in the card_designs directory, add the prefix
+            file_name = os.path.basename(self.current_file)
+            new_path = os.path.join(card_designs_dir, file_name)
+            self._save_to_file(new_path)
+            # Update the current_file to reflect the new path
+            self.current_file = new_path
 
     def save_as_file(self, event=None):
         file_path = filedialog.asksaveasfilename(defaultextension=".ini", filetypes=[("INI files", "*.ini")])

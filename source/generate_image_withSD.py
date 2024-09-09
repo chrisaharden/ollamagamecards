@@ -59,7 +59,7 @@ prompt_text = """
     "3": {
         "class_type": "KSampler",
         "inputs": {
-            "cfg": 8,
+            "cfg": 7,
             "denoise": 1,
             "latent_image": [
                 "5",
@@ -77,10 +77,10 @@ prompt_text = """
                 "6",
                 0
             ],
-            "sampler_name": "euler",
+            "sampler_name": "euler_ancestral",
             "scheduler": "normal",
-            "seed": 8566257,
-            "steps": 20
+            "seed": 1050497315502915,
+            "steps": 60
         }
     },
     "4": {
@@ -93,8 +93,8 @@ prompt_text = """
         "class_type": "EmptyLatentImage",
         "inputs": {
             "batch_size": 1,
-            "height": 512,
-            "width": 512
+            "height": 904,
+            "width": 904
         }
     },
     "6": {
@@ -104,7 +104,7 @@ prompt_text = """
                 "4",
                 1
             ],
-            "text": "masterpiece best quality girl"
+            "text": "masterpiece best quality"
         }
     },
     "7": {

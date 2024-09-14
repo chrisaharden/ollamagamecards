@@ -1,0 +1,59 @@
+{
+    "3": {
+        "class_type": "KSampler",
+        "inputs": {
+            "cfg": 8,
+            "denoise": 0.9,
+            "latent_image": ["5", 0],
+            "model": ["4", 0],
+            "negative": ["7", 0],
+            "positive": ["6", 0],
+            "sampler_name": "dpm_2_a",
+            "scheduler": "karras",
+            "seed": 1050497315502915,
+            "steps": 50
+        }
+    },
+    "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+            "ckpt_name": "sd_xl_base_1.0.safetensors"
+        }
+    },
+    "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+            "batch_size": 1,
+            "height": 904,
+            "width": 904
+        }
+    },
+    "6": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": ["4", 1],
+            "text": "pointillism style, dots of pure color, optical color mixing, neo-impressionist technique, Georges Seurat inspired"
+        }
+    },
+    "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": ["4", 1],
+            "text": "smooth brushstrokes, blended colors, sharp lines, photorealistic"
+        }
+    },
+    "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+            "samples": ["3", 0],
+            "vae": ["4", 2]
+        }
+    },
+    "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+            "filename_prefix": "ComfyUI_Pointillism",
+            "images": ["8", 0]
+        }
+    }
+}

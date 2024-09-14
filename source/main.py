@@ -102,6 +102,7 @@ class CardGenerator:
             cardBackGenerate = self.config.get("Card Back", "Generate", fallback='FALSE')
             cardBackImageGenContent = self.config.get("Card Back", "Gen Content", fallback='')
             imagePath = self.config.get('Card Back', 'Image', fallback='')
+            art_style_file = self.config.get('Art Style', 'Style File', fallback='')
 
             if (content_type == 'questionsandanswers'): 
                 itemsPerCard *= 2
@@ -114,7 +115,7 @@ class CardGenerator:
             os.makedirs(output_dir, exist_ok=True)
 
             if cardBackGenerate.upper() == 'TRUE':
-                imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle)
+                imagePath = generate_image_withSD.gen_image(cardBackImageGenContent, cardBackTitle, art_style_file)
 
             log_func(f"Generating Cards...\n")
             generate_card_pdf.generate_card_pdf(content_type, contentList, contentTitle, contentFont, itemsPerCard, layout_file) 

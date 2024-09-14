@@ -7,6 +7,7 @@ import json
 import urllib.request
 import urllib.parse
 import random
+import os
 
 server_address = "127.0.0.1:8188"
 client_id = str(uuid.uuid4())
@@ -26,6 +27,14 @@ def get_image(filename, subfolder, folder_type):
 def get_history(prompt_id):
     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
         return json.loads(response.read())
+    
+def load_art_style(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading art style file: {e}")
+        return None
 
 def get_images(ws, prompt):
     prompt_id = queue_prompt(prompt)['prompt_id']
@@ -142,10 +151,20 @@ prompt_text = """
     }
 }
 """
-def gen_image(subject:str, imageFileTitle:str):
-    prompt = json.loads(prompt_text)
+def gen_image(subject:str, imageFileTitle:str, art_style_file:str=''):
+    
+    #load the comfyui prompt from the style file, or use the default
+    if art_style_file and os.path.exists(art_style_file):
+        prompt = load_art_style(art_style_file)
+        if prompt is None:
+            prompt = json.loads(prompt_text)
+    else:
+        prompt = json.loads(prompt_text)
+    
     #set the text prompt for our positive CLIPTextEncode
-    prompt["6"]["inputs"]["text"] = subject
+    #append the subject from the user file to the comfyui prompt in the art_style file 
+    existing_text = prompt["6"]["inputs"]["text"]
+    prompt["6"]["inputs"]["text"] = f"{existing_text} of {subject}"
 
     #set the seed for our KSampler node
     seed = random.randint(1, 1000000)

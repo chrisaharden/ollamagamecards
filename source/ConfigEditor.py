@@ -189,6 +189,11 @@ class ConfigEditor:
                 'layout file': './source/pdf_layouts/pdf-layout-2.5x2.5cards.json'
             }
 
+        # Add a new section for Art Style in the config
+        if 'Art Style' not in self.config:
+            self.config['Art Style'] = {
+                'style file': './source/art_styles/default-art-style.json'
+            }
 
         # Refresh the display with the new config
         self.refresh_display()
@@ -318,6 +323,17 @@ class ConfigEditor:
                     browse_button = tk.Button(frame, text="Browse", command=lambda e=entry: self.browse_layout_file(e),
                                               bg=BUTTON_BG, fg=BUTTON_FG)
                     browse_button.pack(side="right")
+                elif section == 'Art Style' and key_title == 'Style File':
+                    # Create an entry with a browse button for the art style file
+                    entry = tk.Entry(frame, width=80, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
+                                    insertbackground=TEXT_COLOR)
+                    entry.insert(0, value)
+                    entry.pack(side="left", expand=True, fill="x")
+                    self.entries[(section, key)] = entry
+                    
+                    browse_button = tk.Button(frame, text="Browse", command=lambda e=entry: self.browse_art_style_file(e),
+                                              bg=BUTTON_BG, fg=BUTTON_FG)
+                    browse_button.pack(side="right")                
                 else:
                     # Create a regular entry for other fields
                     entry = tk.Entry(frame, width=90, bg=DARKER_BACKGROUND, fg=TEXT_COLOR, 
@@ -325,8 +341,19 @@ class ConfigEditor:
                     entry.insert(0, value)
                     entry.pack(side="left", expand=True, fill="x")
                     self.entries[(section, key)] = entry
+    
     def browse_layout_file(self, entry):
         filename = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
         if filename:
             entry.delete(0, tk.END)
             entry.insert(0, filename)
+
+    def browse_art_style_file(self, entry):
+        filename = filedialog.askopenfilename(
+            initialdir="./source/art_styles",
+            filetypes=[("JSON files", "*.json")]
+        )
+        if filename:
+            entry.delete(0, tk.END)
+            entry.insert(0, filename)
+

@@ -34,6 +34,40 @@ class CardGenerator:
                                      "cat\ndog\ngoat",
                     'output_format': "words in an unnumbered list"
                 },
+                'riddles': {
+                    'system_prompt': "Output riddles in an unnumbered list. no yapping. Create riddles that follow these specific patterns: \
+                                    Riddle Structure:\
+                                    \
+                                    Each riddle should be 1-2 sentences long\
+                                    Include a clear \"Answer:\" after each riddle\
+                                    Focus on common outdoor and household objects\
+                                    Use simple, child-friendly language\
+                                    Incorporate descriptive characteristics or actions of the object\
+                                    \
+                                    Riddle Patterns to Follow:\
+                                    \
+                                    Describe what the object does or its purpose\
+                                    Include contrasting elements when possible (e.g., \"little\"/\"big\")\
+                                    Use first-person perspective occasionally (\"I love to...\", \"I hold...\")\
+                                    Reference everyday actions or common uses\
+                                    \
+                                    Style Examples:\
+                                    Here are examples of the tone and structure to match:\
+                                    \"Some of us might be little, and some of us might be big, but we all save the earth every day. Answer: trees\"\
+                                    \"I love to eat grass, and I can run on gas. Answer: lawnmower\"\
+                                    \"I hold your junk and make it go away. I keep messes off the stress. Answer: trash can\"\
+                                    Target Objects:\
+                                    Create riddles about objects commonly found:\
+                                    \
+                                    In gardens and yards\
+                                    On patios and decks\
+                                    Around house exteriors\
+                                    In outdoor play areas\
+                                    Common nature elements\
+                                    \
+                                    Please generate [number] riddles following these guidelines, making sure each one is family-friendly and appropriate for a backyard treasure hunt.",
+                    'output_format': "riddles in an unnumbered list"
+                },                
                 'questions': {
                     'system_prompt': "Output questions as an unnumbered list with question marks at the end of each question. no yapping. Example:\n"
                                      "Is this a question 1?\nIs this a question 2?\nIs this a question 3?\n",
@@ -104,7 +138,7 @@ class CardGenerator:
             imagePath = self.config.get('Card Back', 'Image', fallback='')
             art_style_file = self.config.get('Art Style', 'Style File', fallback='')
 
-            if (content_type == 'questionsandanswers'): 
+            if (content_type == 'questionsandanswers' or content_type == 'riddles'): 
                 itemsPerCard *= 2
 
             # Get the layout file path from the config

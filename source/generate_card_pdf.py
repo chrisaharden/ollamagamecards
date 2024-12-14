@@ -118,33 +118,22 @@ def generate_card_pdf(content_type:str, contentList:list, title: str, font:str, 
                         pdf.set_xy(cursor_x, cursor_y)
                         pdf.multi_cell(section_width - cell_margin, line_height, item, align='C')
                         
-                    elif content_type == 'questionsandanswers':
-                        # extract_items() grabs two lines at once for questions and answers 
-                        if index % 2 == 0: #even entries are questions
-                            if "?" not in item:
-                                print(f"WARNING: index:{index},x:{x},y:{y}: Question is missing a question mark, or array is off by one.  Cards may have questions and answers swapped.")
-
+                    elif content_type == 'questionsandanswers' or content_type == 'riddles':
+                        # For both Q&A and riddles, we handle pairs of text (question/answer or riddle/answer)
+                        if index % 2 == 0:  # Question or riddle
                             pdf.set_xy(cursor_x, cursor_y)
                             pdf.set_font(font, size=11)
                             pdf.multi_cell(section_width - cell_margin, line_height, item, align='C')
-                        else: #odd entries are answers.  move them down.
-                            #print(f"{x},{y}: {item}")
-                            
-                            # Calculate the number of lines, then calculate the total height of the multi-cell, 
-                            # so you can move the answer box location up that amount.
+                        else:  # Answer
+                            # Calculate position for answer
                             text_width = pdf.get_string_width(item)
                             number_of_lines = int(text_width / (section_width-cell_margin)) + 1
                             answer_height = number_of_lines * answer_line_height
-                            #print(f"height in: {answer_height}, number of lines: {number_of_lines}")
-                            answer_cursor_y=cursor_y+body_height-answer_height-cell_margin
-                            pdf.set_xy(cursor_x,answer_cursor_y)
+                            answer_cursor_y = cursor_y + body_height - answer_height - cell_margin
+                            
+                            pdf.set_xy(cursor_x, answer_cursor_y)
                             pdf.set_font(font, size=answer_font_size)
-
-                            # Print the answer 
-                            ybefore = pdf.get_y()
-                            pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C',border=0)
-                            yafter = pdf.get_y()
-                            #print(f"height out: {yafter - ybefore}, number of lines: {number_of_lines}")
+                            pdf.multi_cell(section_width-cell_margin, answer_line_height, item, align='C', border=0)
 
                     else: #assuming "words"
                         # For single words, center them

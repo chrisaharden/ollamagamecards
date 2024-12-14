@@ -307,7 +307,7 @@ class ConfigEditor:
                 
                 if section == 'General' and key_title == 'Content Type':
                     # Create a dropdown for Content Type
-                    dropdown = ttk.Combobox(frame, values=["Words", "Questions", "QuestionsAndAnswers"],
+                    dropdown = ttk.Combobox(frame, values=["Words", "Questions", "QuestionsAndAnswers", "Riddles"],
                                             width=88, state="readonly")
                     dropdown.set(value)  # Set the current value
                     dropdown.pack(side="left", expand=True, fill="x")
@@ -356,4 +356,3 @@ class ConfigEditor:
         if filename:
             entry.delete(0, tk.END)
             entry.insert(0, filename)
-

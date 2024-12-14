@@ -35,11 +35,11 @@ class CardGenerator:
                     'output_format': "words in an unnumbered list"
                 },
                 'riddles': {
-                    'system_prompt': "Output riddles in an unnumbered list. no yapping. Create riddles that follow these specific patterns: \
+                    'system_prompt': "Output riddles in an unnumbered list. no titles. no carriage returns in the questions. no yapping. Create riddles that follow these specific patterns: \
                                     Riddle Structure:\
                                     \
                                     Each riddle should be 1-2 sentences long\
-                                    Include a clear \"Answer:\" after each riddle\
+                                    Include a clear \n\"Answer:\" after each riddle\
                                     Focus on common outdoor and household objects\
                                     Use simple, child-friendly language\
                                     Incorporate descriptive characteristics or actions of the object\
@@ -53,9 +53,9 @@ class CardGenerator:
                                     \
                                     Style Examples:\
                                     Here are examples of the tone and structure to match:\
-                                    \"Some of us might be little, and some of us might be big, but we all save the earth every day. Answer: trees\"\
-                                    \"I love to eat grass, and I can run on gas. Answer: lawnmower\"\
-                                    \"I hold your junk and make it go away. I keep messes off the stress. Answer: trash can\"\
+                                    \"Some of us might be little, and some of us might be big, but we all save the earth every day. \nAnswer: trees\"\
+                                    \"I love to eat grass, and I can run on gas. \nAnswer: lawnmower\"\
+                                    \"I hold your junk and make it go away. I keep messes off the stress. \nAnswer: trash can\"\
                                     Target Objects:\
                                     Create riddles about objects commonly found:\
                                     \
@@ -65,8 +65,8 @@ class CardGenerator:
                                     In outdoor play areas\
                                     Common nature elements\
                                     \
-                                    Please generate [number] riddles following these guidelines, making sure each one is family-friendly and appropriate for a backyard treasure hunt.",
-                    'output_format': "riddles in an unnumbered list"
+                                    Please generate riddles following these guidelines, making sure each one is family-friendly and appropriate for a backyard treasure hunt.",
+                    'output_format': "riddles in an unnumbered list.  no titles. no carriage returns in the questions."
                 },                
                 'questions': {
                     'system_prompt': "Output questions as an unnumbered list with question marks at the end of each question. no yapping. Example:\n"
